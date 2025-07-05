@@ -1,0 +1,91 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import Entity.*;
+public class Subjects
+{
+public ArrayList<Subject> getSubjectsForBranch(String BranchId,int Semester) throws SQLException
+{
+     ArrayList<Subject> subject=new ArrayList<Subject>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT s.SubjectId,s.Subjectname,s.SubjectCode,b.DisplayName,b.SemorYear,sb.CurrentYearSem,sb.SubjectBranchId FROM SubjectBranchMaster sb,SubjectMaster s,BranchMaster b where b.BranchId=sb.BranchId and s.SubjectId=sb.SubjectId and sb.BranchId=? and AcademicYear=(select max(AcademicYear) from SubjectBranchMaster) and CurrentYearSem=? order by sb.CurrentYearSem,sb.PaperNo");
+            st.setString(1, BranchId);
+            st.setInt(2, Semester);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                Subject sub=new Subject();
+                sub.SubjectBranchId=rs.getString(7);
+                sub.SubjectCode=rs.getString(3);
+                sub.SubjectName=rs.getString(2);
+                subject.add(sub);
+            }
+           return subject;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Subjects.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+ }
+
+public ArrayList<Subject> getAllSubjectsForBranch(String BranchId) throws SQLException
+{
+     ArrayList<Subject> subject=new ArrayList<Subject>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT s.SubjectId,s.Subjectname,s.SubjectCode,b.DisplayName,b.SemorYear,sb.CurrentYearSem,sb.SubjectBranchId FROM SubjectBranchMaster sb,SubjectMaster s,BranchMaster b where b.BranchId=sb.BranchId and s.SubjectId=sb.SubjectId and sb.BranchId=? and AcademicYear=(select max(AcademicYear) from SubjectBranchMaster) order by sb.CurrentYearSem,sb.PaperNo");
+            st.setString(1, BranchId);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                Subject sub=new Subject();
+                sub.SubjectBranchId=rs.getString(7);
+                sub.SubjectCode=rs.getString(3);
+                sub.SubjectName=rs.getString(2);
+                sub.YearSem=rs.getString(6);
+                subject.add(sub);
+            }
+           return subject;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Subjects.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+ }
+}
+

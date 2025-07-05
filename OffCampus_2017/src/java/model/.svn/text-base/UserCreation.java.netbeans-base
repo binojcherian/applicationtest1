@@ -1,0 +1,751 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import Entity.*;
+
+public class UserCreation
+{
+
+public boolean SaveUser(String UserName,String Password,String Name,String Privilege) throws SQLException
+{
+    Connection con=null;
+
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("insert into MguClientLogin (UserName,Password,Name,StartDate,Privilege) values(?,?,?,sysdate(),?)");
+            st.setString(1, UserName);
+            st.setString(2, Password);
+            st.setString(3, Name);
+            st.setString(4, Privilege);
+            st.execute();
+            return true;
+
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean AssignSOToAssistant(String Assistant,String SO) throws SQLException
+{
+    Connection con=null;
+
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("insert into AssistantSOMapping (User_Asst,User_SO,StartDate) values(?,?,sysdate())");
+            st.setString(1, Assistant);
+            st.setString(2, SO);
+
+            st.execute();
+            return true;
+
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public String IsUserAlreadyExists(String Username,String Privilege) throws SQLException
+{
+     Connection con = null;
+      try {
+
+            con = new DBConnection().getConnection();
+             PreparedStatement st = con.prepareStatement("SELECT count(*) FROM MguClientLogin where  Username=? and EndDate is null");
+            st.setString(1, Username);
+            ResultSet Record = st.executeQuery();
+            if (Record.next())
+            {
+                int i = Record.getInt(1);
+                if (i >= 1)
+                {
+                 return "UserName already in Use";
+                }
+            }
+            return null;
+      }
+      catch (SQLException ex) {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+     finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+
+}
+
+public ArrayList<User>getAllUsers() throws SQLException
+{
+    ArrayList<User> UserList=new ArrayList<User>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT  UserName,Name, Privilege FROM MguClientLogin where EndDate is null and (Privilege=32 or Privilege=33) order by UserId desc");
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                User user=new User();
+                user.UserName=rs.getString(1);
+                user.Name=rs.getString(2);
+                user.Privilege=rs.getString(3);
+                if(rs.getInt(3)==32)
+                {
+                    user.Category="Section Officer";
+                }
+                if(rs.getInt(3)==33)
+                {
+                    user.Category="Assistant";
+                }
+                UserList.add(user);
+            }
+            return UserList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public ArrayList<User>getAllUsersInDesignationOrder() throws SQLException
+{
+    ArrayList<User> UserList=new ArrayList<User>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT  UserName,Name, Privilege FROM MguClientLogin where EndDate is null and (Privilege=32 or Privilege=33) order by Privilege ");
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                User user=new User();
+                user.UserName=rs.getString(1);
+                user.Name=rs.getString(2);
+                user.Privilege=rs.getString(3);
+                if(rs.getInt(3)==32)
+                {
+                    user.Category="Section Officer";
+                }
+                if(rs.getInt(3)==33)
+                {
+                    user.Category="Assistant";
+                }
+                UserList.add(user);
+            }
+            return UserList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+public boolean DeleteUser(String UserName,String Privilege) throws SQLException
+{
+    Connection con=null;
+
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("update MguClientLogin set EndDate=sysdate() where UserName=? and Privilege=?");
+            st.setString(1, UserName);
+            st.setString(2, Privilege);
+            st.execute();
+            return true;
+
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean DeleteUserFromAssistantSOMapping(String UserName,String Privilege) throws SQLException
+{
+    Connection con=null;
+    PreparedStatement st=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            if(Privilege.equals("32"))
+            {
+                st = con.prepareStatement("update AssistantSOMapping set EndDate=sysdate() where User_SO=? and EndDate is null");
+            }
+            if(Privilege.equals("33"))
+            {
+                st = con.prepareStatement("update AssistantSOMapping set EndDate=sysdate() where User_Asst=? and EndDate is null");
+            }
+            st.setString(1, UserName);
+            st.execute();
+            return true;
+
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean RemoveAssistantfromSO(String AssistantSOId) throws SQLException
+{
+    Connection con=null;
+
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("update AssistantSOMapping set EndDate=sysdate() where AssistantSOId=?");
+            st.setString(1, AssistantSOId);
+            st.execute();
+            return true;
+
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public ArrayList<User>getSectionOfficers() throws SQLException
+{
+    ArrayList<User> UserList=new ArrayList<User>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT  UserName,Name, Privilege FROM MguClientLogin where EndDate is null and Privilege=32 ");
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                User user=new User();
+                user.UserName=rs.getString(1);
+                user.Name=rs.getString(2);
+                user.Privilege=rs.getString(3);
+                if(rs.getInt(3)==32)
+                {
+                    user.Category="Section Officer";
+                }
+                if(rs.getInt(3)==33)
+                {
+                    user.Category="Assistant";
+                }
+                UserList.add(user);
+            }
+            return UserList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public ArrayList<User>getAssistantsNotAssigned() throws SQLException
+{
+    ArrayList<User> UserList=new ArrayList<User>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT  UserName,Name, Privilege FROM MguClientLogin where EndDate is null and  Privilege=33 and UserName not in(select User_Asst from AssistantSOMapping  where EndDate is null)");
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                User user=new User();
+                user.UserName=rs.getString(1);
+                user.Name=rs.getString(2);
+                user.Privilege=rs.getString(3);
+                if(rs.getInt(3)==32)
+                {
+                    user.Category="Section Officer";
+                }
+                if(rs.getInt(3)==33)
+                {
+                    user.Category="Assistant";
+                }
+                UserList.add(user);
+            }
+            return UserList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsAssignedUser(String UserName) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT  count(*) FROM MguClientLogin where EndDate is null and  Privilege=33 and UserName not in(select User_Asst from AssistantSOMapping  where EndDate is null) and UserName=?");
+            st.setString(1, UserName);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)>0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public ArrayList<User>getAllAssistants() throws SQLException
+{
+    ArrayList<User> UserList=new ArrayList<User>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT  UserName,Name, Privilege FROM MguClientLogin where EndDate is null and  Privilege=33 ");
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                User user=new User();
+                user.UserName=rs.getString(1);
+                user.Name=rs.getString(2);
+                user.Privilege=rs.getString(3);
+                if(rs.getInt(3)==32)
+                {
+                    user.Category="Section Officer";
+                }
+                if(rs.getInt(3)==33)
+                {
+                    user.Category="Assistant";
+                }
+                UserList.add(user);
+            }
+            return UserList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public ArrayList<User>getAllAssistantsofSO(String SO) throws SQLException
+{
+    ArrayList<User> UserList=new ArrayList<User>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select distinct m.UserName,m.Name, a.AssistantSOId from MguClientLogin m,AssistantSOMapping a where a.User_Asst=m.UserName and m.Privilege=33 and m.EndDate is null and a.EndDate is null and a.User_SO=? ");
+            st.setString(1, SO);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                User user=new User();
+                user.UserName=rs.getString(1);
+                user.Name=rs.getString(2);
+                user.AssistantSOId=rs.getString(3);
+                UserList.add(user);
+            }
+            return UserList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public User getAssigedAssistantRowToDelete(String AssistantSOId) throws SQLException
+{
+     User user=new User();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT User_Asst,User_SO FROM `DEMS_db`.`AssistantSOMapping` where AssistantSOId=?");
+            st.setString(1, AssistantSOId);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                user.UserName=rs.getString(1);
+                user.Name=rs.getString(2);
+               
+            }
+            return user;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public String getSOofAssistant(String Assistant) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("SELECT User_SO FROM `DEMS_db`.`AssistantSOMapping` where User_Asst=? and EndDate is null");
+            st.setString(1, Assistant);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getString(1);
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int TotalMarkEntryStatusOfUser(String UserName,int IsEdited) throws SQLException
+{
+     Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from MarkEntryLog where Username=? and IsEdited=?");
+            st.setString(1,UserName);
+            st.setInt(2, IsEdited);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int TotalAbsMalEntryStatusOfUser(String UserName,int IsEdited) throws SQLException
+{
+     Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from MarkEntryLog l inner Join StudentSubjectMark m on l.StudentSubjectMarkId=m.StudentSubjectMarkId where l.IsEdited=? and m.IsValid=1  and l.UserName=?");
+            st.setInt(1, IsEdited);
+            st.setString(2,UserName);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalCountOfStudentsRegisteredForExam() throws SQLException
+{
+     Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(distinct StudentId) as Count from ExamRegistrationMaster where ExamId=(select max(ExamId) from ExamMaster)");
+            
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalCountOfAbsenteesForExam(String ExamId) throws SQLException
+{
+     Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(StudentId) as Count from StudentSubjectMark where ExamId=? and IsAbsent=1 and IsValid=1");
+            st.setString(1, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalCountOfMalPracticeForExam(String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(StudentId) as Count from StudentSubjectMark where ExamId=? and IsMalPractice=1 and IsValid=1");
+            st.setString(1, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public ArrayList<UserWiseCount> getUserWiseCountOfMark(String SubjectBranchId) throws SQLException
+{
+    Connection con=null;
+    ArrayList<UserWiseCount> UserCount=new ArrayList<UserWiseCount>();
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select c.Name,c.Privilege ,l.UserName,sb.SubjectBranchId,count(l.MarkEntryId) as MarkEntry from MarkEntryLog l inner join StudentSubjectMark m on m.StudentSubjectMarkId=l.StudentSubjectMarkId inner join SubjectBranchMaster sb on m.SubjectBranchId=sb.SubjectBranchId inner join MguClientLogin c on c.UserName=l.UserName where l.IsEdited=0 and m.IsValid=1  and m.SubjectBranchId=? and c.EndDate is null group by UserName,sb.SubjectBranchId");
+            st.setString(1, SubjectBranchId);
+            ResultSet rs=st.executeQuery();
+
+            while(rs.next())
+            {
+                UserWiseCount count=new UserWiseCount();
+                if(rs.getInt(2)==32)
+                {
+                    count.Designation="Section Officer";
+                }
+                if(rs.getInt(2)==33)
+                {
+                    count.Designation="Assistant";
+                }
+                count.UserName=rs.getString("UserName");
+                count.MarkEntryCount=rs.getInt("MarkEntry");
+                count.Name=rs.getString("Name");
+                count.MarkVerificationCount=0;
+
+                UserCount.add(count);
+                
+            }
+            st=con.prepareStatement("select  c.Name,c.Privilege ,l.UserName,sb.SubjectBranchId,count(l.MarkEntryId) as MarkEntry from MarkEntryLog l inner join StudentSubjectMark m on m.StudentSubjectMarkId=l.StudentSubjectMarkId inner join SubjectBranchMaster sb on m.SubjectBranchId=sb.SubjectBranchId inner join MguClientLogin c on c.UserName=l.UserName where l.IsEdited=4 and m.IsSOVerified=1 and m.SubjectBranchId=? and c.EndDate is null group by UserName,sb.SubjectBranchId");
+                st.setString(1, SubjectBranchId);
+                ResultSet rs1=st.executeQuery();
+
+                while(rs1.next())
+                {
+                    UserWiseCount count=new UserWiseCount();
+                    if(rs1.getInt(2)==32)
+                {
+                    count.Designation="Section Officer";
+                }
+                if(rs1.getInt(2)==33)
+                {
+                    count.Designation="Assistant";
+                }
+                    count.UserName=rs1.getString("UserName");
+                    count.MarkEntryCount=0;
+                    count.Name=rs1.getString("Name");
+                    count.MarkVerificationCount=rs1.getInt("MarkEntry");
+
+                    UserCount.add(count);
+                }
+            return UserCount;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+}

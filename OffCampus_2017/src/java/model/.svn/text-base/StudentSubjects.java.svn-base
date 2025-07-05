@@ -1,0 +1,93 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class StudentSubjects
+{
+
+public void InsertIntoStudentSubjectBranchMapBCom() throws SQLException
+{
+    Connection con=null;
+        try 
+        {
+        con=new DBConnection().getConnection();
+        PreparedStatement st = con.prepareStatement("SELECT StudentId,StudentName,BranchId FROM `DEMS_db`.`StudentPersonal`where BranchId =7 or BranchId=8 and JoiningYear=2010 and PRN is not null and StudentId in(select StudentId from StudentFeeMap where ExamFeeId>0)");
+        ResultSet Student=st.executeQuery();
+        while (Student.next())
+        {
+            PreparedStatement st1=con.prepareStatement("select SubjectBranchId from SubjectBranchMaster where BranchId=? and (CurrentYearSem=1 or CurrentYearSem=2) and IsElective=0 and IsOptionalSubject=0");
+            st1.setString(1, Student.getString("BranchId"));
+            ResultSet Subject=st1.executeQuery();
+            while(Subject.next())
+            { 
+                PreparedStatement st2=con.prepareStatement("insert into ExamRegistrationMaster (StudentId,SubjectBranchId) values(?,?)");
+                st2.setString(1, Student.getString("StudentId"));
+                st2.setString(2, Subject.getString("SubjectBranchId"));
+                st2.execute();   
+            }
+        }
+        } 
+        catch (SQLException ex) 
+        {
+            Logger.getLogger(StudentSubjects.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    finally
+    {
+        con.close();
+    }
+}
+
+public void InsertIntoStudentSubjectBranchMap() throws SQLException
+{
+    Connection con=null;
+        try
+        {
+        con=new DBConnection().getConnection();
+        PreparedStatement st = con.prepareStatement("SELECT StudentId,StudentName,BranchId FROM `DEMS_db`.`StudentPersonal`where BranchId !=7 and BranchId!=8 and JoiningYear=2010 and PRN is not null and StudentId  in(select StudentId from StudentFeeMap where ExamFeeId>0)");
+        ResultSet Student=st.executeQuery();
+        while (Student.next())
+        {
+           PreparedStatement st1=con.prepareStatement("select SubjectBranchId from SubjectBranchMaster where BranchId=? and CurrentYearSem=2");
+            st1.setString(1, Student.getString("BranchId"));
+            ResultSet Subject=st1.executeQuery();
+            while(Subject.next())
+            {
+
+                PreparedStatement st2=con.prepareStatement("insert into ExamRegistrationMaster (StudentId,SubjectBranchId) values(?,?)");
+                st2.setString(1, Student.getString("StudentId"));
+                st2.setString(2, Subject.getString("SubjectBranchId"));
+                st2.execute();
+            }
+        }
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(StudentSubjects.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    finally
+    {
+        con.close();
+    }
+}
+
+public static void main(String[] args) throws Exception
+    {
+    StudentSubjects stu=new StudentSubjects();
+  //stu.InsertIntoStudentSubjectBranchMapBCom();
+    stu.InsertIntoStudentSubjectBranchMap();
+    }
+}

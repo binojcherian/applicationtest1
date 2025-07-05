@@ -1,0 +1,443 @@
+<%--
+    Document   : AssistantVerifiedList
+    Created on : Oct 29, 2011, 12:29:04 PM
+    Author     : user
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8" errorPage="ErrorPage.jsp" import="Controller.*,java.util.ArrayList,Entity.*,model.*,java.sql.*" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<%
+if(request.getSession().getAttribute("UserName")==null)
+{
+response.sendRedirect(response.encodeRedirectURL("/OffCampus/LoginPage.jsp?message=Session Time Out.Login again"));
+}
+else
+{
+     LoginController login=new LoginController(request, response);
+int Role=login.getPrivilege(request.getSession().getAttribute("UserName").toString());
+if(Role!=33)
+    {
+        response.sendRedirect(response.encodeRedirectURL("/OffCampus/LoginPage.jsp?message=YOU ARE NOT PERMITTED TO ACCESS THE PAGE"));
+    }
+%>
+<html><head>
+		<title>DEMS</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-2">
+                <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+                <script type="text/javascript" src="./js/MarkEntry.js"></script>
+		<style type="text/css">
+<!--
+body {
+        background-image:  url();
+        margin-left: 0px;
+        margin-top: 0px;
+        margin-right: 0px;
+        margin-bottom: 0px;
+        background-color: #FFFFFF;
+}
+-->
+        </style>
+<link rel="Stylesheet" href="Style/style.css" type="text/css">
+
+
+
+	    <style type="text/css">
+<!--
+.style1 {color: #0099CC}
+-->
+        </style>
+	    </head><body>
+	<!-- rpm find linux search -->
+<table width="90%" align="center" border="0" cellpadding="0" cellspacing="0">
+<tbody>
+<jsp:include page="Header_Assistant.jsp"/>
+<tr><td>
+<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+  <tbody><tr valign="top" align="left">
+          <td width="200" bgcolor="#e8dec3">
+
+        <jsp:include page="Navigation_ExamAssistant.jsp"/>
+
+       </td>
+    <td width="20" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="20"></td>
+    <td width="90%">
+      <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0">
+      <tbody><tr>
+        <td colspan="5" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="609"></td>
+      </tr>
+      <tr>
+        <td width="16" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="18" width="8"></td>
+	<td>
+<div class="textblack"></div>	</td>
+        <td bgcolor="#ffffff">&nbsp;
+            <%-- Content --%>
+<%
+    MarkEntryPRN mark=new MarkEntryPRN(request, response);
+%>
+            <form id="PendingPRNList" name="PendingPRNList" action="PendingPRNList.jsp" method="post">
+
+                <center>
+                    <table  border="1" width="98%" >
+                    <tr  align="center">
+                        <td height="20px" bgcolor="#d9bf79" colspan="3" > <b> <font color="#a02a28"> Pending List of Students</font></b></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <fieldset><legend><span style="color:#a02a28; font-size: small"><b> List of Students for Mark Entry</b></span></legend>
+                                <center>
+                                    <fieldset style="width:90%"><legend><span style="color:#a02a28; font-size: small"><b>Search</b></span></legend>
+                                        <table width="100%">
+
+                                        <tr> </tr>
+                                        <tr>
+                        <td class="textblack" align="left">Select Exam</td>
+                        <td align="left">
+                            <select name="Exam" id="Exam" style="width: 250px">
+                                <option value="-1">.....Select.....</option>
+                                <% ArrayList<ExamData> ExamList=mark.getExams();
+                                            int i=1;
+                                            int count=ExamList.size();
+                                            if(count>0){
+                                                    while(i<=count)
+                                                        {
+                                                        ExamData exam=ExamList.get(i-1);
+                                            %>
+                                           <option <%if(mark.getExam().equals(exam.ExamId)) { out.print("selected");}  %>
+                                                value="<%=exam.ExamId %>"><%=exam.ExamName %></option>
+
+                                            <%i++; }}
+                                            %>
+                            </select>
+                        </td>
+                        <%if(mark.ExamError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=mark.ExamError()%></span> </td>
+                        <% } %>
+                        </tr>
+
+                                <tr>
+                                <td class="textblack" align="left">Course</td>
+                                <td align="left">
+                              <select name="Course" id="Course" style="width: 250px" onchange="ChangeYearOrSemForMarkEntry();">
+                                <option value="-1">.....Select.....</option>
+                                            <% ArrayList<Entity.CourseData> CourseList=mark.getBranchList();
+                                            i=0;
+                                            count=CourseList.size();
+
+                                                    while(i<count)
+                                                        {
+                                                       Entity.CourseData Course=CourseList.get(i);
+                                            %>
+                                            <option <%if(Integer.parseInt(mark.getBranch())== Course.BranchId)
+                                           { out.print("selected");}%>
+                                                value="<%=Course.BranchId %>"><%=Course.BranchName %></option>
+
+                                            <%i++; }
+                                            %>
+
+                            </select>
+                        </td>
+                                <td class="textblack" align="left">
+                                            PRN
+                                        </td>
+                                        <td class="textblack" align="left">
+                                            <input type="text" name="PRN" id="PRN" value="<%=mark.getPRN() %>" style="width: 215px" maxlength="13">
+                                        </td>
+                            </tr>
+
+                              <tr>
+                        <td class="textblack" align="left">Select Acdemic Year</td>
+                        <td align="left">
+                            <div id="Acdemic_Year" align="left">
+                                <select  name="AcdemicYear" id="AcdemicYear" style="width: 115px">
+                                    <option value="-1">.....Select.....</option>
+                                    <option value="2010" <%if(mark.getAcademicYear().equals("2010")){out.print("selected");}%>>2010</option>
+                                    <option value="2011" <%if(mark.getAcademicYear().equals("2011")){out.print("selected");}%>>2011</option>
+                                    <option value="2012" <%if(mark.getAcademicYear().equals("2012")){out.print("selected");}%>>2012</option>
+                                </select>
+                            </div>
+                        </td>
+                        <%if(mark.AcdemicYearError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=mark.AcdemicYearError()%></span> </td>
+                        <% } %>
+                    </tr>
+                       <tr>
+                        <td class="textblack" align="left">Select Year/Semester</td>
+                        <td align="left">
+                            <div id="YearOrSem" align="left">
+                                <select  name="YearSem" id="YearSem" style="width: 115px" onchange="ChangeSubjectListNew();">
+                                    <option value="-1">.....Select.....</option>
+                                    <%
+                                    count=mark.getMaxYearOrSemForCourse();
+                                    i=1;
+                                    while(i<=count)
+                                        {%>
+                                        <option <%if(Integer.parseInt(mark.getSemYear())==i) { out.print("selected");}  %> value=<%=i %>><%=i %></option>
+                                                <% i++;}%>
+                                </select>
+                            </div>
+                        </td>
+                        <%if(mark.SemError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=mark.SemError()%></span> </td>
+                        <% } %>
+                    </tr>
+
+                                    <tr>
+
+                                        <td class="textblack" align="left">Subject</td>
+                                <td align="left">
+                                    <div id="SubjectList" align="left">
+                                    <select name="Subject" id="Subject" style="width: 270px">
+                                 <option value="-1">.....Select.....</option>
+                                            <% ArrayList<Subject> SubList=mark.getSubjectsForCourseAcdemicYear();
+                                            i=0;
+                                           if(SubList!=null)
+                                               {
+                                            count=SubList.size();
+                                            if(count!=0)
+                                                {
+                                                    while(i<count)
+                                                        {
+                                                        Subject sub=SubList.get(i);
+                                            %>
+                                           <option <%if(mark.getSubject().equals(sub.SubjectId)) { out.print("selected");}%>
+                                                value="<%=sub.SubjectId %>"><%=sub.SubjectName %></option>
+
+                                            <%i++; }}}
+                                            %>
+                                 %>
+                            </select>
+                                 </div>
+                                </td>
+                                     <td  align="left">
+                                            <input type="submit" name="Search" name="Search" value="Search">
+                                        </td>
+
+                                    </tr>
+
+
+                                </table>
+                                    </fieldset>
+                                    <br>
+                                    </center>
+                                            <!-- Pagination Starts-->
+                    <%!
+                        public int nullIntconv(String str) {
+                            int conv = 0;
+                            if (str == null) {
+                                str = "0";
+                            } else if ((str.trim()).equals("null")) {
+                                str = "0";
+                            } else if (str.equals("")) {
+                                str = "0";
+                            }
+                            try {
+                                conv = Integer.parseInt(str);
+                            } catch (Exception e) {
+                            }
+                            return conv;
+                        }
+                    %>
+                    <%
+                                Connection con = new DBConnection().getConnection();
+                                String message=null;
+                                ResultSet rsPagination = null;
+                                ResultSet rsRowCnt = null;
+
+                                PreparedStatement psPagination = null;
+                                PreparedStatement psRowCnt = null;
+
+                                int iShowRows = 30;  // Number of records show on per page
+                                int iTotalSearchRecords = 20;  // Number of pages index shown
+
+                                int iTotalRows = nullIntconv(request.getParameter("iTotalRows"));
+                                int iTotalPages = nullIntconv(request.getParameter("iTotalPages"));
+                                int iPageNo = nullIntconv(request.getParameter("iPageNo"));
+                                int cPageNo = nullIntconv(request.getParameter("cPageNo"));
+
+                                int iStartResultNo = 0;
+                                int iEndResultNo = 0;
+
+                                if(request.getParameter("Search")!=null)
+                                    {
+                                    iPageNo=0;
+                                    }
+                                if(iPageNo!=0)
+                                iPageNo = Math.abs((iPageNo - 1) * iShowRows);
+
+                                try
+                                {
+                                    String sqlPagination = mark.getPendingPRNList()+" where   not exists(select p.PRN ,p.StudentName from StudentSubjectMark m inner join SubjectBranchMaster b1 on b1.SubjectBranchID=m.SubjectBranchId inner join SubjectMaster s1 on s1.SubjectId=b1.SubjectId where  ";
+                                    
+                                      if(mark.getSubject().toString()!=null )
+                                        {
+                                            sqlPagination+=   " b1.SubjectId="+mark.getSubject().toString()+ " and";
+                                        }
+
+                                    sqlPagination +=" m.StudentId=p.Studentid and m.ExamId=7 and IsValid=1 and IsMalPractice!=1 ) order by PRN "+" limit " + iPageNo + "," + iShowRows + "";
+                                    System.out.println("@@@@@"+sqlPagination);
+                                    psPagination = con.prepareStatement(sqlPagination);
+                                    //psPagination.setString(1, request.getSession().getAttribute("Subject").toString());
+                                    //psPagination.setString(2, request.getSession().getAttribute("UserName").toString());
+                                    rsPagination = psPagination.executeQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    out.print(ex);
+
+                                }
+                                Boolean notFound = false;
+                                if (!rsPagination.next()) {
+                                    notFound = true;
+                                    message = " No Matching Records Found";
+                                }
+
+                                //// this will count total number of rows
+                                String sqlRowCnt = "SELECT FOUND_ROWS() as cnt";
+
+                                psRowCnt = con.prepareStatement(sqlRowCnt);
+                                rsRowCnt = psRowCnt.executeQuery();
+
+                                if (rsRowCnt.next())
+                                {
+                                    iTotalRows = rsRowCnt.getInt("cnt");
+                                }
+                    %>
+                    <input type="hidden" name="iPageNo" value="<%=iPageNo%>"/>
+                    <input type="hidden" name="cPageNo" value="<%=cPageNo%>"/>
+                    <input type="hidden" name="iShowRows" value="<%=iShowRows%>"/>
+<% if (message != null) {%>
+                        <center>
+                        <table><tr>
+                            <td></td>
+                            <td colspan="">  <span  class="Error" style="color:red">*<%=message%>  </span></td>
+                            </tr><br/></table> </center>
+                        <%}else{%>
+
+                        <table><tr><td> <table width="3"bgcolor="#dedede" ><tr><td ></td><td></td></tr><tr><td></td></tr></table></td>
+                <td class="textblack">  The Marks approved by SO are shown in this colour</td></tr>
+        </table>
+                       <center>
+                            <br>
+
+                            <div align="center" class="textred"> <b><font class="textred">Total number of Records : <%=iTotalRows%></font></b></div>
+                             <table border="1" width="100%" style="border-style: groove" cellspacing="0" cellpadding="3" class="textblack">
+
+                             <tr class="textblack" bgcolor="#ded4b8" align="center">
+                         <th >Sl No</th>
+                         <th>PRN</th>
+                         <th>StudentName</th>
+
+                    </tr>
+                            <%
+
+                                        //CenterVerification verification = new CenterVerification();
+
+                                        int k = 0;
+                                        k = k + iPageNo;
+                                        if (!notFound) {
+                                            do {
+
+                                                k++;
+
+
+                            %>
+
+
+                           <tr>
+                        <td class="textblack" align="left"><%=k%></td>
+                        <td class="textblack" align="left"><%=rsPagination.getString("PRN") %></td>
+                        <td class="textblack" align="left" ><%=rsPagination.getString("StudentName")  %></td>
+                    </tr>
+                            <%  } while (rsPagination.next());
+                                                                                            }%>
+
+
+
+
+                            <%
+                                        //// calculate next record start record  and end record
+                                        try {
+                                            if (iTotalRows < (iPageNo + iShowRows)) {
+                                                iEndResultNo = iTotalRows;
+                                            } else {
+                                                iEndResultNo = (iPageNo + iShowRows);
+                                            }
+
+                                            iStartResultNo = (iPageNo + 1);
+                                            iTotalPages = ((int) (Math.ceil((double) iTotalRows/ iShowRows)));
+
+             ;                           } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                            %>
+                            <br/>
+                            <tr>
+                                <td colspan="8"  align="right">
+                                    <div>
+                                        <%
+                                                    //// index of pages
+
+                                                   int l = 0;
+                                                    int cPage = 0;
+                                                    if (iTotalRows != 0) {
+                                                        cPage = ((int) (Math.ceil((double) iEndResultNo / (iTotalSearchRecords * iShowRows))));
+
+                                                        int prePageNo = (cPage * iTotalSearchRecords) - ((iTotalSearchRecords - 1) + iTotalSearchRecords);
+                                                        if ((cPage * iTotalSearchRecords) - (iTotalSearchRecords) > 0) {
+                                        %>
+                                        <a href="PendingPRNList.jsp?iPageNo=<%=prePageNo%>&cPageNo=<%=prePageNo%>"> << Previous</a>
+                                        <%
+                                                                                                                                                    }
+
+                                                                                                                                                    for (l = ((cPage * iTotalSearchRecords) - (iTotalSearchRecords - 1)); l <= (cPage * iTotalSearchRecords); l++) {
+                                                                                                                                                        if (l == ((iPageNo / iShowRows) + 1)) {
+                                        %>
+                                        <a href="PendingPRNList.jsp?iPageNo=<%=l%>" style="cursor:pointer;color: #a02a28"><b><%=l%></b></a>
+                                        <%
+                                                                                                                                                                                                                                                    } else if (l <= iTotalPages) {
+                                        %>
+                                        <a href="PendingPRNList.jsp?iPageNo=<%=l%>" style="cursor:pointer;color: blue"><%=l%></a>
+                                        <%
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                    if (iTotalPages > iTotalSearchRecords && l < iTotalPages) {
+                                        %>
+                                        <a href="PendingPRNList.jsp?iPageNo=<%=l%>&cPageNo=<%=l%>"> >> Next</a>
+                                        <%
+                                                        }
+                                                    }
+                                        %>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table></center><%} if(!con.isClosed()){ con.close();} %>
+                            </fieldset>
+                        </td>
+
+                    </tr>
+
+                </table>
+                     </center>
+
+                <br>
+                <br>
+            </form>
+
+         <%-- Content --%>
+        </td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+  <TR> <TD><br/></TD></TR>
+</tbody></table>
+</td></tr>
+</tbody></table>
+</body></html>
+<jsp:include page="footer.jsp"/><% }%>
+
+
+

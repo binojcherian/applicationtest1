@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" isDefault="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[($V{REPORT_COUNT}.intValue() % 2) == 0]]></conditionExpression>
+			<style isDefault="false" style="style1"/>
+		</conditionalStyle>
+	</style>
+	<queryString>
+		<![CDATA[SELECT b.DisplayName,s.SubjectCode,s.Subjectname,
+sb.CurrentYearSem,sb.PaperNo, sb.IsElective,sb.IsOptionalSubject,sb.IsAddedWithTotal,
+sb.ExternalMax,sb.ExternalMin,sb.InternalMax,sb.InternalMin ,sb.AcademicYear,m.SubBranchName
+FROM SubjectBranchMaster sb,
+SubjectMaster s,BranchMaster b,SubBranchMaster m where b.BranchId=sb.BranchId
+and s.SubjectId=sb.SubjectId
+and sb.SubBranchId=m.SubBranchId
+and b.BranchId=17  order by m.SubBranchName ,b.DisplayName,sb.CurrentYearSem,s.SubjectCode,sb.PaperNo]]>
+	</queryString>
+	<field name="DisplayName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SubjectCode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Subjectname" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CurrentYearSem" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PaperNo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsElective" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsOptionalSubject" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsAddedWithTotal" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ExternalMax" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ExternalMin" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="InternalMax" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="InternalMin" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="AcademicYear" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SubBranchName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="Course">
+		<groupExpression><![CDATA[$F{DisplayName}]]></groupExpression>
+		<groupHeader>
+			<band height="25">
+				<line>
+					<reportElement x="0" y="0" width="802" height="1"/>
+				</line>
+				<line>
+					<reportElement mode="Opaque" x="1" y="-21" width="802" height="1" backcolor="#E9E2E2"/>
+				</line>
+				<line>
+					<reportElement mode="Opaque" x="96" y="-19" width="1" height="20" backcolor="#E9E2E2"/>
+				</line>
+				<textField>
+					<reportElement x="40" y="1" width="402" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DisplayName}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="AcademicYear">
+		<groupExpression><![CDATA[$F{AcademicYear}]]></groupExpression>
+	</group>
+	<group name="Elective">
+		<groupExpression><![CDATA[$F{SubBranchName}]]></groupExpression>
+		<groupHeader>
+			<band height="23">
+				<textField>
+					<reportElement x="39" y="0" width="432" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{SubBranchName}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="22">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="2" width="39" height="20" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Paper No]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="39" y="3" width="1" height="18" backcolor="#E9E2E2"/>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="40" y="1" width="56" height="21" backcolor="#E9E2E2"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="98" y="2" width="273" height="20" backcolor="#E9E2E2"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Subject Name]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="373" y="2" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="374" y="2" width="39" height="20" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Sem/Yr]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="415" y="3" width="55" height="19" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[IsElective]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="470" y="3" width="55" height="19" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[IsOptinal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="525" y="3" width="61" height="19" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[+with Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="586" y="3" width="45" height="19" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[ExtMax]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="634" y="3" width="35" height="19" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[ExtMin]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="671" y="1" width="42" height="21" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[IntMax]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="713" y="3" width="41" height="19" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[IntMin]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="755" y="3" width="46" height="19" backcolor="#E9E2E2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="414" y="1" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="470" y="1" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="525" y="2" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="588" y="2" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="671" y="1" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="712" y="1" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="754" y="2" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement x="0" y="2" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="802" y="3" width="1" height="18" backcolor="#E9E2E2"/>
+			</line>
+			<line>
+				<reportElement mode="Opaque" x="632" y="2" width="1" height="20" backcolor="#E9E2E2"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" mode="Opaque" x="2" y="1" width="801" height="20" backcolor="#E7EDED"/>
+			</frame>
+			<textField>
+				<reportElement x="44" y="2" width="52" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{SubjectCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="104" y="3" width="267" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{Subjectname}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="39" y="0" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="98" y="0" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="416" y="1" width="1" height="23"/>
+			</line>
+			<textField>
+				<reportElement x="377" y="3" width="36" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{CurrentYearSem}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="421" y="3" width="46" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{IsElective}==1?"Yes":""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="471" y="3" width="54" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{IsOptionalSubject}==1?"Yes":""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="531" y="3" width="55" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{IsAddedWithTotal}==1?"Yes":""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="589" y="2" width="42" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ExternalMax}==0?"":$F{ExternalMax}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="634" y="3" width="38" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ExternalMin}==0?"":$F{ExternalMin}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="673" y="2" width="40" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{InternalMax}==0?"":$F{InternalMax}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="715" y="2" width="36" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{InternalMin}==0?"":$F{InternalMin}+""]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="469" y="0" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="527" y="1" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="588" y="1" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="634" y="0" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="672" y="0" width="1" height="24"/>
+			</line>
+			<line>
+				<reportElement x="713" y="1" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="754" y="0" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="801" y="0" width="1" height="23"/>
+			</line>
+			<line>
+				<reportElement x="1" y="0" width="1" height="24"/>
+			</line>
+			<line>
+				<reportElement x="373" y="0" width="1" height="22"/>
+			</line>
+			<textField>
+				<reportElement x="2" y="3" width="37" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PaperNo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

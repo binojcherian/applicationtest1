@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Certificate" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" isDefault="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{SubjectCode}.equals("UI102011")]]></conditionExpression>
+			<style isDefault="false" style="style1" mode="Opaque" forecolor="#DA1D1D" fill="Solid" markup="styled" pattern="" isBlankWhenNull="true" fontName="Monospaced" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" isPdfEmbedded="false">
+				<box>
+					<pen lineWidth="1.25" lineColor="#100606"/>
+					<topPen lineWidth="1.25" lineColor="#100606"/>
+					<leftPen lineWidth="1.25" lineColor="#100606"/>
+					<bottomPen lineWidth="1.25" lineColor="#100606"/>
+					<rightPen lineWidth="1.25" lineColor="#100606"/>
+				</box>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="branchId" class="java.lang.String"/>
+	<parameter name="sem" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[Select * From
+((
+SELECT p.StudentId,p.StudentName,p.PRN,
+c.CollegeName,b.DisplayName,sb.CurrentYearSem,s.SubjectCode,
+s.SubjectName,sb.ExternalMin,sb.InternalMin,sb.ExternalMax,sb.InternalMax,sb.TotalMark as subTotal,
+sb.IsAddedWithTotal,sb.HasInternal,sb.PartNo,
+sb.PassMark,m.ExternalMark,m.InternalMark,m.ModerationExt,
+m.ModerationInt,m.ExternalMark+m.InternalMark+m.ModerationExt+m.ModerationInt as total ,
+m.ExternalMark+m.ModerationExt as Externalaward,
+m.Internalmark+m.ModerationInt as Internalaward,
+sb.SubjectBranchId,m.IsAbsent,m.IsMalPractice
+ FROM `DEMS_db`.`StudentSubjectMark` m
+inner join StudentPersonal p on p.StudentId=m.StudentId
+inner join ExamRegistrationMaster em on em.StudentId=p.StudentId
+and em.SubjectBranchId=m.SubjectBranchId and em.ExamId=1
+inner join CollegeMaster c on c.CollegeId=p.CollegeId
+ inner join BranchMaster b on b.BranchId=p.BranchId
+inner join SubjectBranchMaster sb on sb.SubjectBranchId=m.SubjectBranchId
+ inner join SubjectMaster s on s.SubjectId=sb.SubjectId
+where m.IsValid=1 and p.BranchId=9  and sb.CurrentYearSem=2 and m.IsMalPractice!=1 and m.SubjectBranchId=154)
+union
+(SELECT p.StudentId,p.StudentName,p.PRN,
+c.CollegeName,b.DisplayName,sb.CurrentYearSem,s.SubjectCode,
+s.SubjectName,sb.ExternalMin,sb.InternalMin,sb.ExternalMax,sb.InternalMax,sb.TotalMark as subTotal,
+sb.IsAddedWithTotal,sb.HasInternal,sb.PartNo,
+sb.PassMark,m.ExternalMark,m.InternalMark,m.ModerationExt,
+m.ModerationInt,m.ExternalMark+m.InternalMark+m.ModerationExt+m.ModerationInt as total ,
+m.ExternalMark+m.ModerationExt as Externalaward,
+m.Internalmark+m.ModerationInt as Internalaward,
+sb.SubjectBranchId,m.IsAbsent,m.IsMalPractice
+ FROM `DEMS_db`.`StudentSubjectMark` m
+inner join StudentPersonal p on p.StudentId=m.StudentId
+inner join ExamRegistrationMaster em on em.StudentId=p.StudentId
+and em.SubjectBranchId=m.SubjectBranchId and em.ExamId=1
+inner join CollegeMaster c on c.CollegeId=p.CollegeId
+ inner join BranchMaster b on b.BranchId=p.BranchId
+inner join SubjectBranchMaster sb on sb.SubjectBranchId=m.SubjectBranchId
+ inner join SubjectMaster s on s.SubjectId=sb.SubjectId
+where m.IsValid=1 and p.BranchId=9 and sb.CurrentYearSem=2 and m.IsMalPractice!=1 and m.SubjectBranchId!=154)
+UNION (SELECT p.StudentId,p.StudentName,p.PRN,
+c.CollegeName,b.DisplayName,sb.CurrentYearSem,'UI102011',' Total For English',sb.ExternalMin,sb.InternalMin,sb.ExternalMax,sb.InternalMax,sb.TotalMark as subTotal,
+sb.IsAddedWithTotal,sb.HasInternal,sb.PartNo,
+sb.PassMark,m.ExternalMark,m.InternalMark,m.ModerationExt,
+m.ModerationInt+m1.ModerationInt,
+m.ExternalMark+m.InternalMark+m.ModerationExt+m.ModerationInt+m1.ExternalMark+m1.InternalMark+m1.ModerationExt+m1.ModerationInt as total ,
+m.ExternalMark+m.ModerationExt +m1.ExternalMark+m1.ModerationExt as Externalaward,
+m.Internalmark+m.ModerationInt +m1.Internalmark+m1.ModerationInt as Internalaward,
+sb.SubjectBranchId,m.IsAbsent,m.IsMalPractice
+ FROM `DEMS_db`.`StudentSubjectMark` m
+inner join StudentPersonal p on p.StudentId=m.StudentId
+inner join ExamRegistrationMaster em on em.StudentId=p.StudentId
+and em.SubjectBranchId=m.SubjectBranchId and em.ExamId=1
+inner join CollegeMaster c on c.CollegeId=p.CollegeId
+ inner join BranchMaster b on b.BranchId=p.BranchId
+inner join SubjectBranchMaster sb on sb.SubjectBranchId=m.SubjectBranchId
+ inner join SubjectMaster s on s.SubjectId=sb.SubjectId inner join
+`DEMS_db`.`StudentSubjectMark` m1
+inner join StudentPersonal p1 on p1.StudentId=m1.StudentId and p1.StudentId=p.StudentId
+inner join ExamRegistrationMaster em1 on em1.StudentId=p1.StudentId
+and em1.SubjectBranchId=m1.SubjectBranchId and em1.ExamId=1
+inner join CollegeMaster c1 on c1.CollegeId=p1.CollegeId
+ inner join BranchMaster b1 on b1.BranchId=p1.BranchId
+inner join SubjectBranchMaster sb1 on sb1.SubjectBranchId=m1.SubjectBranchId
+ inner join SubjectMaster s1 on s1.SubjectId=sb1.SubjectId
+where m1.IsValid=1 and p1.BranchId=9  and sb1.CurrentYearSem=2 and m1.IsMalPractice!=1 and m1.SubjectBranchId=154 and
+m.IsValid=1 and p.BranchId=9  and sb.CurrentYearSem=1 and m.IsMalPractice!=1 and m.SubjectBranchId=51 order by StudentId ,SubjectCode)
+) a order by StudentId ,SubjectCode]]>
+	</queryString>
+	<field name="StudentId" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="StudentName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PRN" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CollegeName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="DisplayName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CurrentYearSem" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SubjectCode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SubjectName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ExternalMin" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="InternalMin" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ExternalMax" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="InternalMax" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="subTotal" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsAddedWithTotal" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="HasInternal" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PartNo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PassMark" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ExternalMark" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="InternalMark" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ModerationExt" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ModerationInt" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Externalaward" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Internalaward" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SubjectBranchId" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsAbsent" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsMalPractice" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="total_1" class="java.lang.Integer" resetType="Group" resetGroup="student" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<variable name="PassMark_1" class="java.lang.Integer" resetType="Group" resetGroup="student" calculation="Sum">
+		<variableExpression><![CDATA[$F{PassMark}]]></variableExpression>
+	</variable>
+	<variable name="subTotal_1" class="java.lang.Integer" resetType="Group" resetGroup="student" calculation="Sum">
+		<variableExpression><![CDATA[$F{subTotal}]]></variableExpression>
+	</variable>
+	<variable name="total_2" class="java.lang.Integer" resetType="Group" resetGroup="student" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<variable name="total_3" class="java.lang.String" resetType="Group" resetGroup="student" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<variable name="total_4" class="java.lang.Integer" resetType="Group" resetGroup="student" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<variable name="total_5" class="java.lang.Integer" resetType="Group" resetGroup="student" calculation="Sum">
+		<variableExpression><![CDATA[$F{IsAbsent}==1?-9999999:($F{total}<$F{PassMark}?-999999:$F{SubjectCode}.equals("UI102011")? 0:$F{total})]]></variableExpression>
+	</variable>
+	<group name="student" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{StudentId}]]></groupExpression>
+		<groupHeader>
+			<band height="51">
+				<staticText>
+					<reportElement x="0" y="17" width="227" height="20"/>
+					<textElement/>
+					<text><![CDATA[FACULTY OF LANGUAGE AND LITERATURE
+]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="60">
+				<textField>
+					<reportElement x="482" y="6" width="36" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{PassMark_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="519" y="6" width="36" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{subTotal_1}]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Auto" isBlankWhenNull="true">
+					<reportElement x="375" y="32" width="180" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{total_5}< 0 ? "  ":"("+(Double.toString($V{total_4}.doubleValue()).substring(0,1)=='1'?"One":Double.toString($V{total_4}.doubleValue()).substring(0,1)=='2'?"Two":Double.toString($V{total_4}.doubleValue()).substring(0,1)=='3'?"Three":Double.toString($V{total_4}.doubleValue()). substring(0,1)
+=='4'?"Four":Double.toString($V{total_4}.doubleValue()).substring(0,1)=='5'?"Five":Double.toString($V{total_4}.doubleValue()).substring(0,1)=='6'?"Six":Double.toString($V{total_4}.doubleValue()). substring(0,1)
+=='7'?"Seven":Double.toString($V{total_4}.doubleValue()).substring(0,1)=='8'?"Eight":Double.toString($V{total_4}.doubleValue()).substring(0,1)=='9'?"Nine":"Zero")+"  "+
+(Double.toString($V{total_4}.doubleValue()).substring(1,2)=='1'?"One":Double.toString($V{total_4}.doubleValue()).substring(1,2)=='2'?"Two":Double.toString($V{total_4}.doubleValue()).substring(1,2)=='3'?"Three":Double.toString($V{total_4}.doubleValue()).substring(1,2)
+=='4'?"Four":Double.toString($V{total_4}.doubleValue()).substring(1,2)=='5'?"Five":Double.toString($V{total_4}.doubleValue()).substring(1,2)=='6'?"Six":Double.toString($V{total_4}.doubleValue()).substring(1,2)
+=='7'?"Seven":Double.toString($V{total_4}.doubleValue()).substring(1,2)=='8'?"Eight":Double.toString($V{total_4}.doubleValue()).substring(1,2)=='9'?"Nine":"Zero")+"  "+
+(Double.toString($V{total_4}.doubleValue()).substring(2,3)=='1'?"One":Double.toString($V{total_4}.doubleValue()).substring(2,3 )=='2'?"Two":Double.toString($V{total_4}.doubleValue()).substring(2,3 )=='3'?"Three":Double.toString($V{total_4}.doubleValue()). substring(2,3)
+=='4'?"Four":Double.toString($V{total_4}.doubleValue()).substring(2,3 )=='5'?"Five":Double.toString($V{total_4}.doubleValue()).substring(2,3)=='6'?"Six":Double.toString($V{total_4}.doubleValue()). substring(2,3)
+=='7'?"Seven":Double.toString($V{total_4}.doubleValue()).substring(2,3)=='8'?"Eight":Double.toString($V{total_4}.doubleValue()).substring(2,3)=='9'?"Nine":"Zero")+" Only )"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="449" y="6" width="33" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{total_5}<0?" ":$V{total_5}+""]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="42" y="45" width="150" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[*** End of Statement ***]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="57" y="6" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="219">
+			<staticText>
+				<reportElement x="42" y="27" width="58" height="20"/>
+				<textElement/>
+				<text><![CDATA[EM-III]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="59" y="67" width="100" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PRN}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="227" y="124" width="312" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{StudentName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="146" width="457" height="12"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PRN}+"  at the Second Semester Bachelor of  Degree Examination April 2011"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="427" y="67" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[22 March 2012]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="34" splitType="Prevent">
+			<frame>
+				<reportElement style="style1" x="0" y="3" width="554" height="20"/>
+			</frame>
+			<textField>
+				<reportElement x="275" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ExternalMin}==0?"":$F{ExternalMin}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="310" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ExternalMax}==0?"":$F{ExternalMax}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="415" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{InternalMax}==0?"":$F{InternalMax}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{InternalMin}==0?"":$F{InternalMin}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{IsAbsent}==1?"A":$F{Externalaward}+" "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="345" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{IsAbsent}==1?"A":$F{Internalaward}==0?"":$F{Internalaward}+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="482" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PassMark}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="450" y="2" width="33" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{IsAbsent}==1?"A":$F{total}+" "]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="59" y="2" width="174" height="20" isPrintWhenDetailOverflows="true" forecolor="#010111"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{SubjectName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="518" y="2" width="36" height="20" forecolor="#010111"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{subTotal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="2" width="47" height="20" forecolor="#010111"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{SubjectCode}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

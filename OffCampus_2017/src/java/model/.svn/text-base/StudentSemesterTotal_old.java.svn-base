@@ -1,0 +1,51 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class StudentSemesterTotal
+{
+    public void SaveStudentSemesterTotal() throws SQLException
+    {
+        Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select m.StudentId,sum(m.ExternalMark+InternalMark) as Total,m.ExamId,b.CurrentYearSem from StudentSubjectMark m inner join SubjectBranchMaster b on m.SubjectBranchId=b.SubjectBranchId where StudentId not in( select distinct StudentId from StudentSubjectMark where IsAbsent=1 or IsPassed=0) group by m.StudentId");
+            ResultSet Rs=st.executeQuery();
+
+            while(Rs.next())
+            {
+                st=con.prepareStatement("INSERT INTO StudentPassDetails (StudentId,ExamId,YearOrSem,TotalMark,EnteredDate,LastModifiedDate) values(?,?,?,?,sysdate(),sysdate())");
+                st.setInt(1, Rs.getInt("StudentId"));
+                st.setString(2, Rs.getString("ExamId"));
+                st.setInt(3, Rs.getInt("CurrentYearSem"));
+                st.setInt(4, Rs.getInt("Total"));
+                st.execute();
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(StudentSemesterTotal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally
+        {
+            con.close();
+        }
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        StudentSemesterTotal SemTotal=new StudentSemesterTotal();
+        SemTotal.SaveStudentSemesterTotal();
+    }
+}

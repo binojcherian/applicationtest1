@@ -1,0 +1,84 @@
+10
+
+dir
+57
+http://10.33.1.8/svn/OffCampus
+http://10.33.1.8/svn/OffCampus
+
+
+
+2012-02-17T11:15:22.343249Z
+57
+sunanda
+has-props
+has-prop-mods
+
+
+
+
+
+
+
+
+
+
+
+
+991c7d96-bc98-4e46-b3d9-edbf9ae7c47b
+
+build
+dir
+
+test
+dir
+
+dist
+dir
+
+
+
+delete
+
+nbproject
+dir
+
+src
+dir
+
+web
+dir
+
+build.xml
+file
+
+
+
+
+2014-03-18T07:14:22.000000Z
+26cab6b1fce8a621afd0b3e27f2fafcc
+2011-12-08T11:08:27.555706Z
+1
+admin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3428
+

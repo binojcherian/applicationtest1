@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recruitmenthandwritting" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1d1127eb-6b51-4f20-867f-3f9c4781d67a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT  a.account_id, a.candidate_document_file,f.falseno
+FROM mgu_recruitment.mgurec_candidate_details a inner join
+mgurec_candidate_account b on a.account_id=b.account_id
+inner join mgurec_falsno f
+on f.account_id=a.account_id where candidate_percent>=65 and falseno='801228' and account_student_step='3';]]>
+	</queryString>
+	<field name="account_id" class="java.lang.Long"/>
+	<field name="candidate_document_file" class="java.lang.String"/>
+	<field name="falseno" class="java.lang.Long"/>
+	<group name="account" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{account_id}]]></groupExpression>
+		<groupHeader>
+			<band height="752">
+				<rectangle>
+					<reportElement uuid="f0f44437-5786-4bed-a322-30648bcbe159" x="6" y="94" width="549" height="647"/>
+				</rectangle>
+				<line>
+					<reportElement uuid="cb436593-eb73-407c-9f56-9c803bfa97ab" x="6" y="87" width="549" height="1"/>
+				</line>
+				<staticText>
+					<reportElement uuid="dfd11ad4-6822-40d8-9a39-cd0b1a3339e8" stretchType="RelativeToBandHeight" x="94" y="59" width="434" height="28"/>
+					<textElement>
+						<font fontName="DejaVu Serif" size="18" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MAHATMA GANDHI UNIVERSITY]]></text>
+				</staticText>
+				<componentElement>
+					<reportElement uuid="db7bd1cf-8804-4ae9-aa87-0a3f59a21942" x="409" y="9" width="139" height="21"/>
+					<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false">
+						<jr:codeExpression><![CDATA[$F{falseno}]]></jr:codeExpression>
+					</jr:barbecue>
+				</componentElement>
+				<textField>
+					<reportElement uuid="2d133aed-0fa7-4a2d-82f5-47c67c18585d" x="428" y="30" width="100" height="20"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression><![CDATA[$F{falseno}]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement uuid="9a3099e4-04af-4672-97e3-6f8907990483" x="6" y="0" width="86" height="87"/>
+					<imageExpression><![CDATA["C:\\xampp\\htdocs\\recadmin\\img\\logo.gif"]]></imageExpression>
+				</image>
+				<image scaleImage="FillFrame">
+					<reportElement uuid="69039433-94e8-4c73-b7a8-bf0111ffee33" x="60" y="108" width="468" height="611" isPrintWhenDetailOverflows="true"/>
+					<imageExpression><![CDATA["C:\\xampp\\htdocs\\recadmin\\uploads\\"+$F{candidate_document_file}]]></imageExpression>
+				</image>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageFooter>
+		<band height="50">
+			<textField>
+				<reportElement uuid="acb49f5e-b4d4-4aee-aa39-e1f6ea345a19" x="428" y="0" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="cde0d06c-d760-4fcd-93de-1698d4a33440" x="508" y="0" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement uuid="b97dcf58-46b5-403a-bef7-b32344aa7c75" x="0" y="0" width="200" height="20"/>
+				<jr:Code128 xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" textPosition="bottom">
+					<jr:codeExpression><![CDATA[$F{falseno}]]></jr:codeExpression>
+				</jr:Code128>
+			</componentElement>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,53 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package model;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+public class DBConnection {
+
+    public Connection getConnection() 
+    {
+        try
+        {
+            try
+            {
+                Class.forName("com.mysql.jdbc.Driver");
+            } 
+            catch (ClassNotFoundException ex)
+            {
+                Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/DEMS_db", "dems", "mgudem$_@)!!");
+           // Connection con = DriverManager.getConnection("jdbc:mysql://210.212.239.68:3306/DEMS_db", "dems", "mgudem$_@)!!");
+            //DriverManager.getConnection("jdbc:mysql://10.33.1.56:3306/DEMS_db","dems","dems");
+            con.setAutoCommit(true);
+            return con;
+        } 
+        catch (SQLException ex)
+        {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+public static void main(String s[]) throws SQLException
+    {
+     Connection con=  new DBConnection().getConnection();
+    PreparedStatement p= con.prepareStatement("select * from StudentLoginMaster");
+   ResultSet Data= p.executeQuery();
+   while(Data.next())
+   {
+       System.out.print(Data.getString(1));
+   }
+}
+}

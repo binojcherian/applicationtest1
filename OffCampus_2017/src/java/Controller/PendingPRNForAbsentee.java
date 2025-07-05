@@ -1,0 +1,288 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Controller;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.*;
+import Entity.*;
+
+
+public class PendingPRNForAbsentee
+{
+    HttpServletRequest request;
+    HttpServletResponse response;
+    String ExamId="-1",BranchId="-1",SubjectBranchId="-1",Assistant="-1",PRN=null,BranchError=null,SubjectError=null,StudentError=null;
+    Absentees absent=new Absentees();
+    boolean Search=false;
+    ArrayList<String> SelectedStudents=new ArrayList<String>();
+     ArrayList<String> MarkId=new ArrayList<String>();
+    MarkEntry_old mark=new MarkEntry_old();
+    public PendingPRNForAbsentee(HttpServletRequest request,HttpServletResponse response) throws SQLException
+    {
+        this.request=request;
+        this.response=response;
+        
+        if(request.getParameter("Course")!=null)
+        {
+            BranchId=request.getParameter("Course");
+            request.getSession().setAttribute("BranchId", BranchId);
+        }
+        if(request.getParameter("SubjectSearch")!=null)
+        {
+            SubjectBranchId=request.getParameter("SubjectSearch");
+            request.getSession().setAttribute("SubjectBranchId", SubjectBranchId);
+        }
+        if(request.getParameter("PRN")!=null)
+        {
+            PRN=request.getParameter("PRN");
+            request.getSession().setAttribute("PRN", PRN);
+        }
+         if(request.getParameter("Assistant")!=null)
+        {
+            Assistant=request.getParameter("Assistant");
+            request.getSession().setAttribute("Assistant", Assistant);
+        }
+        if(request.getParameter("iPageNo")!=null && (!request.getParameter("iPageNo").equals("0")))
+        {
+            Search=true;
+            request.getSession().setAttribute("iPageNo",request.getParameter("iPageNo"));
+                   if(request.getParameter("cPageNo")!=null)
+                   {
+                       request.getSession().setAttribute("cPageNo", request.getParameter("cPageNo"));
+                   }
+                    if(request.getSession().getAttribute("BranchId")!=null)
+                    {
+                        BranchId=request.getSession().getAttribute("BranchId").toString();
+                    }
+                    if(request.getSession().getAttribute("SubjectBranchId")!=null)
+                    {
+                        SubjectBranchId=request.getSession().getAttribute("SubjectBranchId").toString();
+                    }
+
+                    if(request.getSession().getAttribute("PRN")!=null)
+                    {
+                        PRN=request.getSession().getAttribute("PRN").toString();
+                    }
+                    if(request.getSession().getAttribute("Assistant")!=null)
+                    {
+                        Assistant=request.getSession().getAttribute("Assistant").toString();
+                    }
+
+        }
+        if(request.getParameter("Search")!=null && request.getParameter("Search").equals("Search"))
+        {
+           BranchError=getBranchError();
+
+           if(BranchError==null)
+           {
+                SubjectError=getSubjectError();
+                if(SubjectError==null)
+                {
+                    Search=true;
+                    request.getSession().removeAttribute("iPageNo");
+                }
+               
+           }
+           
+        }
+        if(request.getParameter("SearchSO")!=null && request.getParameter("SearchSO").equals("Search"))
+        {
+            Search=true;
+            request.getSession().removeAttribute("iPageNo");
+        }
+
+        if(request.getParameter("Submit")!=null && request.getParameter("Submit").equals("Mark as UnConfirmed Students"))
+        {
+            try
+            {
+                if(request.getParameterValues("Select")!=null && request.getParameterValues("Select").length>0 )
+                {
+                    String Stu[]=request.getParameterValues("Select");
+                     for (String SId : Stu)
+                     {
+                       SelectedStudents.add(SId);
+                     }
+                     if(absent.MarkTemporaryAbsentee(SubjectBranchId, SelectedStudents,request))
+                     {
+                         Search=true;
+                     }
+                }
+                else
+                {
+                    StudentError="Select Students";
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        if(request.getParameter("SubmitSO")!=null)
+        {
+            if(request.getParameterValues("Select")!=null && request.getParameterValues("Select").length>0)
+            {
+              String Stu[]=request.getParameterValues("Select");
+                     for (String SId : Stu)
+                     {
+                       MarkId.add(SId);
+                     }
+                     if(request.getParameter("SubmitSO").equals("ReSend to Assistant"))
+                     {
+                         if(absent.RejectAbsenteeBySO(MarkId))
+                         {
+                             Search=true;
+                         }
+                     }
+                     if(request.getParameter("SubmitSO").equals("Approve Unconfirmed Students"))
+                     {
+                        if(absent.ApproveUnconfirmedBySO(MarkId,request))
+                        {
+                            if(absent.SaveUnconfirmedWithheldDetails(MarkId))
+                            {
+                                Search=true;
+                            }                            
+                        }
+                     }
+            }
+            else
+            {
+                StudentError="Select Students";
+            }
+        }       
+    }
+
+public String getAssistant()
+{
+    return Assistant;
+}
+
+public String getExam()
+{
+    if(ExamId==null)
+        return "-1";
+    return ExamId;
+}
+public String getBranch()
+{
+    if(BranchId==null)
+        return "-1";
+    return BranchId;
+}
+public String getPRN()
+{
+    if(PRN==null)
+        return "";
+    else
+        return PRN;
+}
+public String getSubject()
+{
+    if(SubjectBranchId==null)
+        return "-1";
+    return SubjectBranchId;
+}
+
+public String getExamError()
+{
+    if(ExamId.equals("-1"))
+    {
+        return "Select Exam";
+    }
+    return null;
+}
+public String getBranchError()
+{
+    if(BranchId.equals("-1"))
+    {
+        return "Select Course";
+    }
+    return null;
+}
+public String getSubjectError()
+{
+    if(SubjectBranchId.equals("-1"))
+    {
+        return "Select Subject";
+    }
+    return null;
+}
+public String CourseError()
+{
+    return BranchError;
+}
+public String SubjectError()
+{
+    return SubjectError;
+}
+public ArrayList<Entity.CourseData> getBranchList() throws SQLException
+{
+    return absent.getBranchList();
+}
+public ArrayList<ExamData> getExams() throws SQLException
+{
+    return absent.getExams();
+}
+public int getMaxYearOrSemForCourse() throws SQLException
+{
+    return absent.getMaxYearOrSemForCourse(BranchId);
+}
+public ArrayList<Subject> getAllSubjects() throws SQLException
+{
+    Subjects sub=new Subjects();
+    return sub.getAllSubjectsForBranch(BranchId);
+}
+public ArrayList<User>getAllAssistantsofSO() throws SQLException
+{
+    UserCreation user=new UserCreation();
+    return user.getAllAssistantsofSO(request.getSession().getAttribute("UserName").toString());
+}
+public String getQuery()
+{
+    String Query=null;
+    if(Search)
+    {        
+        Query= "SELECT SQL_CALC_FOUND_ROWS p.PRN ,p.StudentName FROM `DEMS_db`.`ExamRegistrationMaster`  e  inner join StudentPersonal p on e.StudentID=p.Studentid  and e.ExamId=7 inner join SubjectBranchMaster b on b.SubjectBranchID=e.SubjectBranchId  inner join SubjectMaster s on s.SubjectId=b.SubjectId and  b.SubjectId=? ";
+
+        if(SubjectBranchId!=null)
+        {
+            Query+=" and e.SubjectBranchId="+SubjectBranchId;
+        }
+        if(PRN!=null && (!PRN.isEmpty()))
+        {
+            Query+=" and p.PRN='"+PRN+"' ";
+        }
+    }
+    return Query;
+}
+
+public String getQueryForSOVerification()
+{
+    String Query="select SQL_CALC_FOUND_ROWS s.StudentName,s.PRN,s.StudentId,sm.SubjectBranchId,sm.StudentSubjectMarkId,su.SubjectName ,b.DisplayName from StudentPersonal s inner join BranchMaster b on s.BranchId=b.BranchId inner join StudentSubjectMark sm on s.StudentId=sm.StudentId inner join SubjectBranchMaster sb on sb.SubjectBranchId=sm.SubjectBranchId inner join SubjectMaster su on su.SubjectId=sb.SubjectId  inner join MarkEntryLog l on l.StudentSubjectMarkId=sm.StudentSubjectMarkId and l.IsEdited=5 inner join AssistantSOMapping am on am.User_Asst=l.UserName where am.User_SO=? and sm.UnConfirmedSOVerified=0 and sm.TempUnconfirmed=1 and sm.IsValid=1 ";
+    if(Search)
+    {
+        if(SubjectBranchId!=null && (!SubjectBranchId.equals("-1")))
+        {
+            Query+=" and sm.SubjectBranchId="+SubjectBranchId;
+        }
+        if(PRN!=null && (!PRN.isEmpty()))
+        {
+            Query+=" and s.PRN='"+PRN+"' ";
+        }
+        if(Assistant!=null && (!Assistant.equals("-1")))
+        {
+            Query+=" and l.UserName='"+Assistant+"' ";
+        }
+    }
+    return Query;
+}
+}

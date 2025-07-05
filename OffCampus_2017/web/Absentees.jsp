@@ -1,0 +1,558 @@
+
+<%@page contentType="text/html" pageEncoding="UTF-8" errorPage="ErrorPage.jsp" import="java.util.*,java.sql.*,Controller.*,java.util.ArrayList,Entity.*,model.*" %>
+<% if(request.getSession().getAttribute("UserName")==null)
+{
+response.sendRedirect(response.encodeRedirectURL("/OffCampus/LoginPage.jsp?message=Session Time Out.Login again"));
+}
+else
+{
+     LoginController login=new LoginController(request, response);
+int Role=login.getPrivilege(request.getSession().getAttribute("UserName").toString());
+if(Role!=32)
+    {
+        response.sendRedirect(response.encodeRedirectURL("/OffCampus/LoginPage.jsp?message=YOU ARE NOT PERMITTED TO ACCESS THE PAGE"));
+    }
+AbsenteesEntryBckUp absentee=new AbsenteesEntryBckUp(request, response);
+
+%>
+<html><head>
+
+                <title>DEMS</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-2">
+                <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+                <script type="text/javascript" src="./js/Absentee.js"></script>
+		<style type="text/css">
+<!--
+body
+{
+        background-image:  url();
+        margin-left: 0px;
+        margin-top: 0px;
+        margin-right: 0px;
+        margin-bottom: 0px;
+        background-color: #FFFFFF;
+}
+-->
+        </style>
+<link rel="Stylesheet" href="Style/style.css" type="text/css">
+
+
+
+	    <style type="text/css">
+<!--
+.style1 {color: #0099CC}
+-->
+        </style>
+	    </head>
+            <body onload="getStatusOfAbsEntry();">
+	<!-- rpm find linux search -->
+<table width="90%" align="center" border="0" cellpadding="0" cellspacing="0">
+<tbody>
+<jsp:include page="Header_SO.jsp"/>
+<tr><td>
+<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+  <tbody><tr valign="top" align="left">
+          <td width="200" bgcolor="#e8dec3">
+
+        <jsp:include page="Navigation_ExamSO.jsp"/>
+
+       </td>
+    <td width="20" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="20"></td>
+    <td width="90%">
+      <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0">
+      <tbody><tr>
+        <td colspan="5" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="609"></td>
+      </tr>
+      <tr>
+        <td width="16" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="18" width="8"></td>
+	<td>
+<div class="textblack"></div>	</td>
+        <td bgcolor="#ffffff">&nbsp;
+            <%-- Content --%>
+            <form id="Absentees" name="Absentees" action="Absentees.jsp" method="post" >
+                <center>
+                    <table  border="1" width="97%" >
+                    <tr  align="center">
+                        <td height="20px" bgcolor="#d9bf79" > <b> <font color="#a02a28">Enter Absentees/MalPractice PRN</font></b></td>
+                    </tr>
+                    <tr> <td align="center">
+                    <fieldset style="width:95%"><legend><span style="color:#a02a28; font-size: small"><b>Please Enter</b></span></legend>
+                <table>
+                    <tr>
+                        <td colspan="3">
+                            <center>
+                                <div id="Status">
+                                </div>
+                            </center>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="textblack">Select Exam</td>
+                        <td>
+                            <select name="Exam" id="Exam" style="width: 300px">
+                                <option value="-1">.....Select.....</option>
+                                <% ArrayList<ExamData> ExamList=absentee.getExams();
+                                            int i=1;
+                                            int count=ExamList.size();
+                                            if(count>0){
+                                                    while(i<=count)
+                                                        {
+                                                        ExamData exam=ExamList.get(i-1);
+                                            %>
+                                           <option <%if(absentee.getExam().equals(exam.ExamId)) { out.print("selected");}%>
+                                                value="<%=exam.ExamId %>"><%=exam.ExamName %></option>
+
+                                            <%i++; }}
+                              %>
+                            </select>
+                        </td>
+                        <%if(absentee.ExamError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=absentee.ExamError()%></span> </td>
+                        <% } %>
+
+                    </tr>
+                    <tr>
+                        <td class="textblack">Select Course</td>
+                        <td>
+                            <select name="Course" id="Course" style="width: 250px" onchange="ChangeYearOrSemForCount();">
+                                <option value="-1">.....Select.....</option>
+                                            <% ArrayList<Entity.CourseData> CourseList=absentee.getBranchList();
+                                            i=0;
+                                            count=CourseList.size();
+
+                                                    while(i<count)
+                                                        {
+                                                        Entity.CourseData Course=CourseList.get(i);
+                                            %>
+                                            <option <%if(Integer.parseInt(absentee.getBranch())==Course.BranchId) { out.print("selected");} %>
+                                                value="<%=Course.BranchId %>"><%=Course.BranchName %></option>
+
+                                            <%i++; }
+                                            %>
+
+                            </select>
+                        </td>
+                        <%if(absentee.BranchError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=absentee.BranchError()%></span> </td>
+                        <% } %>
+                    </tr>
+                     <tr>
+                        <td class="textblack">Select Syllabus</td>
+                        <td>
+                            <div id="Acdemic_Year">
+                                <select  name="AcdemicYear" id="AcdemicYear" style="width: 115px">
+                                    <option value="-1">.....Select.....</option>
+                                    <option value="2010" <%if(absentee.getAcademicYear().equals("2010")){out.print("selected");}%>>2010</option>
+                                    <option value="2011" <%if(absentee.getAcademicYear().equals("2011")){out.print("selected");}%>>2011</option>
+                                     <option value="2012" <%if(absentee.getAcademicYear().equals("2012")){out.print("selected");}%>>2012</option>
+                                </select>
+                            </div>
+                        </td>
+                        <%if(absentee.AcdemicYearError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=absentee.AcdemicYearError()%></span> </td>
+                        <% } %>
+                    </tr>
+                     <tr>
+                        <td class="textblack">Select Year/Semester</td>
+                        <td>
+                            <div id="YearOrSem">
+                                <select  name="YearSem" id="YearSem" style="width: 115px" onchange="redirectfunction();">
+                                    <option value="-1">.....Select.....</option>
+                                    <%
+                                    count=absentee.getMaxYearOrSemForCourse();
+                                    i=1;
+                                    while(i<=count)
+                                        //System.out.print("=-------------"+i+"*"+absentee.getSemYear());
+                                        {%>
+                                        <option <%  if(absentee.getSemYear().equals(i)){ out.print("selected");}  %> value=<%=i %>><%=i %></option>
+                                                <% i++;}%>
+                                </select>
+                            </div>
+                        </td>
+                        <%if(absentee.SemError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=absentee.SemError()%></span> </td>
+                        <% } %>
+                    </tr>
+
+                   
+
+
+                        <tr>
+                                <td class="textblack">Subject</td>
+                                <td>
+                                     <div id="SubjectList"><!--onchange="ViewSubjectTotalCountDetails();"-->
+                                         <select name="Subject" id="Subject" style="width: 270px" >
+                                        <option value="-1">.....Select.....</option>
+                                            <% ArrayList<Subject> SubList=absentee.getSubjectsForCourseAcdemicYear();
+                                            i=0;
+                                            if(SubList!=null)
+                                                {
+                                            count=SubList.size();
+                                            if(count!=0)
+                                                {
+                                                    while(i<count)
+                                                        {
+                                                        Subject sub=SubList.get(i);
+                                            %>
+                                           <option <%if(absentee.getSubject().equals(sub.SubjectId)) { out.print("selected");}%>
+                                                value="<%=sub.SubjectId %>"><%=sub.SubjectName %></option>
+
+                                            <%i++; }}}
+                                            %>
+
+                            </select>
+                                 </div>
+                        </td>
+                        <%if(absentee.SubjectError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=absentee.SubjectError()%></span> </td>
+                        <% } %>
+                            </tr>
+                    <tr>
+                        <td class="textblack">Enter PRN</td>
+                        <td>
+                            <input type="text" name="PRN" id="PRN" style="width: 215px">
+                        </td>
+                        <%if(absentee.PRNError()!=null) {%>
+                        <td><span style="color:#a02a28; font-size: small"><%=absentee.PRNError()%></span> </td>
+                        <% } %>
+                    </tr>
+                    <tr>
+                        <td class="textblack">
+                            <input type="radio" name="Absent" id="Absent" checked="true" value="Absent" >Is Absent
+                        </td>
+                         <td class="textblack">
+                            <input type="radio" name="Absent" id="Absent" value="MalPractice" >Is MalPractice
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right">
+                            <input type="submit" name="Submit" id="Submit" value="Submit" >
+                            <input type="submit" name="Submit_R" id="Submit_R" value="Reset" onclick="return ResetAll();">
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <%if(absentee.getIssaved()!=null) {%>
+                        <td colspan="3" align="right"><span style="color:#a02a28; font-size: small"><b><%=absentee.getIssaved() %></b></span> </td>
+                        <% } %>
+                    </tr>
+                </table>
+                    </fieldset>
+                             <BR>
+                              <fieldset style="width:95%"><legend><span style="color:#a02a28; font-size: small"><b>Absent/MalPractice List</b></span></legend>
+                              <fieldset style="width:95%"><legend><span style="color:#a02a28; font-size: small"><b>Search</b></span></legend>
+                                <table>
+                                    <tr>
+                                         <td class="textblack">Course</td>
+                                <td>
+                                    <select name="CourseSearch" id="CourseSearch" style="width: 260px" onchange="ChangeYearOrSemForSearch();">
+                                    <option value="-1">.....Select.....</option>
+                                           <% ArrayList<Entity.CourseData> BranchList=absentee.getBranchList();
+                                            i=0;
+                                            count=BranchList.size();
+
+                                                    while(i<count)
+                                                        {
+                                                        Entity.CourseData Course=BranchList.get(i);
+                                            %>
+                                            <option <%if(Integer.parseInt(absentee.getCourseSearch())==Course.BranchId) { out.print("selected");} %>
+                                                value="<%=Course.BranchId %>"><%=Course.BranchName %></option>
+
+                                            <%i++; }
+                                            %>
+                                   </select>
+                                </td>
+                                <td class="textblack">
+                                            PRN</td>
+                                <td>
+                                            <input type="text" name="PRNSearch" id="PRNSearch" value="<%=absentee.getPRNSearch() %>" style="width: 215px" maxlength="13">
+                                        </td>
+                                    </tr>
+
+                        <tr>
+                        <td class="textblack">Select Acdemic Year</td>
+                        <td>
+                            <div id="Acdemic_Year">
+                                <select  name="AcdemicYearSearch" id="AcdemicYearSearch" style="width: 115px">
+                                    <option value="-1">.....Select.....</option>
+                                    <option value="2010" <%if(absentee.getAcdemicYearSearch().equals("2010")){out.print("selected");}%>>2010</option>
+                                    <option value="2011" <%if(absentee.getAcdemicYearSearch().equals("2011")){out.print("selected");}%>>2011</option>
+                                     <option value="2012" <%if(absentee.getAcdemicYearSearch().equals("2012")){out.print("selected");}%>>2012</option>
+                                </select>
+                            </div>
+                        </td>
+                        </tr>
+
+
+                         <tr>
+                        <td class="textblack">Select Year/Semester</td>
+                        <td>
+                            <div id="YearOrSemSearch">
+                                <select  name="YearSemSearch" id="YearSemSearch" style="width: 115px" onchange="redirectFunctionForSearch();">
+                                    <option value="-1">.....Select.....</option>
+                                    <%
+                                    count=absentee.getMaxYearOrSemForCourse();
+                                    i=1;
+                                    while(i<=count)
+                                        {%>
+                                        <option <%if(absentee.getSemYearSearch().equals(i)){ out.print("selected");}  %> value=<%=i %>><%=i %></option>
+                                                <% i++;}%>
+                                </select>
+                            </div>
+                        </td>
+                     </tr>
+
+
+                      
+                                    <tr>
+
+                                        <td class="textblack">Subject</td>
+                                <td>
+                                    <div id="SubjectListSearch"><!--onchange="ViewSubjectTotalCountDetails();"-->
+                                         <select name="SubjectSearch" id="SubjectSearch" style="width: 270px" >
+                                        <option value="-1">.....Select.....</option>
+                                            <% ArrayList<Subject> SubList1=absentee.getSubjectsForCourseAcdemicYear();
+                                            i=0;
+                                            if(SubList1!=null)
+                                                {
+                                            count=SubList1.size();
+                                            if(count!=0)
+                                                {
+                                                    while(i<count)
+                                                        {
+                                                        Subject sub=SubList1.get(i);
+                                            %>
+                                           <option <%if(absentee.getSubject().equals(sub.SubjectId)) { out.print("selected");}%>
+                                                value="<%=sub.SubjectId %>"><%=sub.SubjectName %></option>
+
+                                            <%i++; }}}
+                                            %>
+
+                            </select>
+                                 </div>
+                                </td>
+                                     <td colspan="2" align="left"  class="textblack">
+                                         <input type="radio" name="AbsentSearch" id="AbsentSearch"  value="Absent" >Absent
+                                         <input type="radio" name="AbsentSearch" id="AbsentSearch"  value="MalPractice" >MalPractice
+                                         <input type="submit" name="Search" name="Search" value="Search">
+                                     </td>
+                                    </tr>
+                                </table>
+                            </fieldset>
+                  <!-- Pagination Starts-->
+                    <%!
+                        public int nullIntconv(String str) {
+                            int conv = 0;
+                            if (str == null) {
+                                str = "0";
+                            } else if ((str.trim()).equals("null")) {
+                                str = "0";
+                            } else if (str.equals("")) {
+                                str = "0";
+                            }
+                            try {
+                                conv = Integer.parseInt(str);
+                            } catch (Exception e) {
+                            }
+                            return conv;
+                        }
+                    %>
+                    <%
+                                Connection con = new DBConnection().getConnection();
+                                String message=null;
+                                ResultSet rsPagination = null;
+                                ResultSet rsRowCnt = null;
+                                PreparedStatement psPagination = null;
+                                PreparedStatement psRowCnt = null;
+
+                                int iShowRows = 30;  // Number of records show on per page
+                                int iTotalSearchRecords = 20;  // Number of pages index shown
+
+                                int iTotalRows = nullIntconv(request.getParameter("iTotalRows"));
+                                int iTotalPages = nullIntconv(request.getParameter("iTotalPages"));
+                                int iPageNo = nullIntconv(absentee.getiPageNo());
+                                int cPageNo = nullIntconv(absentee.getcPageNo());
+
+                                int iStartResultNo = 0;
+                                int iEndResultNo = 0;
+
+                                if(request.getParameter("Search")!=null)
+                                    {
+                                    iPageNo=0;
+                                    }
+                                if(iPageNo!=0)
+                                iPageNo = Math.abs((iPageNo - 1) * iShowRows);
+
+                                try
+                                {
+                                    String sqlPagination = absentee.getQuery()+" order by StudentSubjectMarkId desc limit " + iPageNo + "," + iShowRows + "";//limiting no of records
+                                    psPagination = con.prepareStatement(sqlPagination);
+                                    psPagination.setString(1, request.getSession().getAttribute("UserName").toString());
+                                    rsPagination = psPagination.executeQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    out.print(ex);
+
+                                }
+                                Boolean notFound = false;
+                                if (!rsPagination.next()) {
+                                    notFound = true;
+                                    message = " No Absentees Entered";
+                                }
+
+                                //// this will count total number of rows
+                                String sqlRowCnt = "SELECT FOUND_ROWS() as cnt";
+
+                                psRowCnt = con.prepareStatement(sqlRowCnt);
+                                rsRowCnt = psRowCnt.executeQuery();
+
+                                if (rsRowCnt.next()) {
+                                    iTotalRows = rsRowCnt.getInt("cnt");
+                                }
+                    %>
+                    <input type="hidden" name="iPageNo" value="<%=iPageNo%>"/>
+                    <input type="hidden" name="cPageNo" value="<%=cPageNo%>"/>
+                    <input type="hidden" name="iShowRows" value="<%=iShowRows%>"/>
+                    <br>
+<% if (message != null) {%>
+                        <center>
+                        <table><tr>
+                            <td></td>
+                            <td colspan="" class="textblack">  <span  class="Error" style="color:red">*<%=message%>*  </span></td>
+                            </tr><br/></table> </center>
+                        <%}else{%>
+
+
+                            <div align="center" class="textred"> <b><font class="textred">Total number of students : <%=iTotalRows%></font></b></div>
+
+                        <table BORDER="1" width="95%" style="border-style: groove" cellspacing="0" cellpadding="3" class="textblack">
+
+                     <tr class="textblack" bgcolor="#ddcccc" align="center">
+                         <th>SlNo</th>
+                         <th>Student Name</th>
+                         <th>PRN</th>
+                         <th>College</th>
+                         <th>Course</th>
+                         <th>Subject</th>
+                         <th>Status</th>
+                        <th>Delete </th>
+                    </tr>
+                            <%
+
+                                        //CenterVerification verification = new CenterVerification();
+                                        String Status= null;
+                                        int j = 0;
+                                        j = j + iPageNo;
+                                        if (!notFound) {
+                                            do {
+
+                                                j++;
+
+                                                if(rsPagination.getString("IsAbsent").equals("1"))
+                                                    {
+                                                    Status="Absent";
+                                                    }
+                                                if(rsPagination.getString("IsMalPractice").equals("1"))
+                                                    {
+                                                    Status="Mal Practice";
+                                                    }
+                            %>
+
+
+                           <tr>
+                        <td class="textblack"><%=j%></td>
+                        <td class="textblack"><%=rsPagination.getString("StudentName") %></td>
+                        <td class="textblack"><%=rsPagination.getString("PRN") %></td>
+                        <td class="textblack"><%=rsPagination.getString("CollegeName") %></td>
+                        <td class="textblack"><%=rsPagination.getString("DisplayName") %></td>
+                        <td class="textblack"><%=rsPagination.getString("SubjectName") %></td>
+
+                        <td class="textblack"><%=Status %></td>
+                <td class="textblack"><a href="DeleteAbsentees.jsp?StudentId=<%=rsPagination.getString("StudentSubjectMarkId") %>">Delete</a> </td> 
+                    </tr>
+                            <%  } while (rsPagination.next());
+                                                                                            }%>
+
+
+
+
+                            <%
+                                        //// calculate next record start record  and end record
+                                        try {
+                                            if (iTotalRows < (iPageNo + iShowRows)) {
+                                                iEndResultNo = iTotalRows;
+                                            } else {
+                                                iEndResultNo = (iPageNo + iShowRows);
+                                            }
+
+                                            iStartResultNo = (iPageNo + 1);
+                                            iTotalPages = ((int) (Math.ceil((double) iTotalRows / iShowRows)));
+
+             ;                           }
+                                        catch (Exception e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+
+                            %>
+                            <br/>
+                            <tr>
+                                <td colspan="8"  align="right">
+                                    <div>
+                                        <%
+                                                    //// index of pages
+
+                                                    i = 0;
+                                                    int cPage = 0;
+                                                    if (iTotalRows != 0) {
+                                                        cPage = ((int) (Math.ceil((double) iEndResultNo / (iTotalSearchRecords * iShowRows))));
+
+                                                        int prePageNo = (cPage * iTotalSearchRecords) - ((iTotalSearchRecords - 1) + iTotalSearchRecords);
+                                                        if ((cPage * iTotalSearchRecords) - (iTotalSearchRecords) > 0) {
+                                        %>
+                                        <a href="Absentees.jsp?iPageNo=<%=prePageNo%>&cPageNo=<%=prePageNo%>"> << Previous</a>
+                                        <%
+                                                                                                                                                    }
+
+                                                                                                                                                    for (i = ((cPage * iTotalSearchRecords) - (iTotalSearchRecords - 1)); i <= (cPage * iTotalSearchRecords); i++) {
+                                                                                                                                                        if (i == ((iPageNo / iShowRows) + 1)) {
+                                        %>
+                                        <a href="Absentees.jsp?iPageNo=<%=i%>" style="cursor:pointer;color: #a02a28"><b><%=i%></b></a>
+                                        <%
+                                                                                                                                                                                                                                                    } else if (i <= iTotalPages) {
+                                        %>
+                                        <a href="Absentees.jsp?iPageNo=<%=i%>" style="cursor:pointer;color: blue"><%=i%></a>
+                                        <%
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                    if (iTotalPages > iTotalSearchRecords && i < iTotalPages) {
+                                        %>
+                                        <a href="Absentees.jsp?iPageNo=<%=i%>&cPageNo=<%=i%>"> >> Next</a>
+                                        <%
+                                                        }
+                                                    }
+                                        %>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table><%}con.close();%></fieldset>
+        </td></tr>
+                </table></center>
+
+
+            </form>
+
+         <%-- Content --%>
+        </td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+  <TR> <TD><br/></TD></TR>
+</tbody></table>
+</td></tr>
+</tbody></table>
+</body></html>
+<jsp:include page="footer.jsp"/><% }%>

@@ -1,0 +1,682 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Controller;
+
+import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import model.*;
+import Entity.*;
+public class MarkEntryPRN
+{
+    HttpServletRequest request;
+    HttpServletResponse response;
+    String UserName=null;
+    String ExamId="-1",BranchId="-1",Id=null,SubjectBranchId="-1",PRN=null,Remarks=null,ExamError=null,BranchError=null,SubjectError=null,PRNError=null,SemError=null,MarkError=null,RemarksError=null;
+    Integer Sem=-1;
+    Double Mark= -1.0;Integer Internal=-1;
+    boolean IsSaved=false,IsEdit=false,IsSendForApproval=false,Search=false;
+    Absentees absent=new Absentees();
+    MarkEntry mark=new MarkEntry();
+    ArrayList<StudentSubjectMark> Studentmark;
+
+    public MarkEntryPRN(HttpServletRequest request,HttpServletResponse response) throws SQLException, UnknownHostException
+    {
+        this.request=request;
+        this.response=response;
+        
+    if(request.getParameter("Exam")!=null)
+    {
+        ExamId=request.getParameter("Exam");
+    }
+    if(request.getParameter("Course")!=null)
+    {
+        BranchId=request.getParameter("Course");
+        request.getSession().setAttribute("BranchId", BranchId);
+    }
+    if(request.getParameter("Subject")!=null)
+    {
+        SubjectBranchId=request.getParameter("Subject");
+        request.getSession().setAttribute("SubjectBranchId", SubjectBranchId);
+    }
+    if(request.getParameter("PRN")!=null)
+    {
+        PRN=request.getParameter("PRN");
+        request.getSession().setAttribute("PRN", PRN);
+    }
+    if(request.getParameter("YearSem")!=null)
+    {
+        Sem=Integer.parseInt(request.getParameter("YearSem"));
+    }
+    if(request.getParameter("Mark")!=null && (!request.getParameter("Mark").isEmpty()))
+    {
+        Mark=Double.parseDouble(request.getParameter("Mark"));
+    }
+        if(request.getParameter("InternalMark")!=null && (!request.getParameter("InternalMark").isEmpty()))
+    {
+        Internal=Integer.parseInt(request.getParameter("InternalMark"));
+    }
+        if(request.getParameter("Remarks")!=null && !(request.getParameter("Remarks").isEmpty()))
+    {
+        Remarks=request.getParameter("Remarks");
+    }
+        if(request.getParameter("Subject")!=null && request.getParameter("AV")!=null)
+        {
+            FillSubjectDetails();
+            if(request.getSession().getAttribute("Subject")!=null)
+            {
+                request.getSession().removeAttribute("Subject");
+            }
+        }
+        if(request.getParameter("StudentSubjectMarkId")!=null)
+        {
+            Id=request.getParameter("StudentSubjectMarkId");
+            if(request.getParameter("Submit")==null && request.getParameter("submit")==null)
+            {
+            FillDataForEdit();
+            IsEdit=true;
+            }
+        }
+         if(request.getParameter("iPageNo")!=null && (!request.getParameter("iPageNo").equals("0")))
+    {
+        Search=true;
+        request.getSession().setAttribute("iPageNo",request.getParameter("iPageNo"));
+               if(request.getParameter("cPageNo")!=null)
+               {
+                   request.getSession().setAttribute("cPageNo", request.getParameter("cPageNo"));
+               }
+                if(request.getSession().getAttribute("BranchId")!=null)
+                {
+                    BranchId=request.getSession().getAttribute("BranchId").toString();
+                }
+                if(request.getSession().getAttribute("SubjectBranchId")!=null)
+                {
+                    SubjectBranchId=request.getSession().getAttribute("SubjectBranchId").toString();
+                }
+
+                if(request.getSession().getAttribute("PRN")!=null)
+                {
+                    PRN=request.getSession().getAttribute("PRN").toString();
+                }
+    }
+    if(request.getParameter("Submit")!=null && request.getParameter("Submit").equals("Submit"))
+    {
+        ExamError=getExamError();
+        if(ExamError==null)
+        {
+            BranchError=getBranchError();
+            if(BranchError==null)
+            {
+                SemError=getSemError();
+                if(SemError==null)
+                {
+                    SubjectError=getSubjectError();
+                    if(SubjectError==null)
+                    {
+                        PRNError=getPRNError();
+                        if(PRNError==null)
+                        {
+                           MarkError=getMarkError();
+                           if(MarkError==null)
+                           {
+                               if(request.getParameter("InternalEdit")!=null && request.getParameter("InternalEdit").equals("Yes") )
+                               {
+                                   RemarksError=getRemarksError();
+                               }
+                               if(RemarksError==null)
+                               {
+                              IsSaved=mark.SaveStudentMarkForSubject(absent.getStudentIdFromPRN(PRN), ExamId, SubjectBranchId,Mark,Internal,Remarks);
+                              if(IsSaved)
+                              {
+                                  if(mark.SaveMarkEntryLog(absent.getStudentIdFromPRN(PRN), SubjectBranchId, ExamId,0, request))
+                                  {
+//                                      if(mark.IsStudentFailedForSubject(Mark, SubjectBranchId))
+//                                      {
+//                                          MarkError="Failed";
+//                                      }
+                                        PRN=PRNAutoIncrement();
+                                        Mark=-1.0;
+                                        Internal=-1;
+                                        IsEdit=false;
+                                        Remarks=null;
+                                  }
+                              }
+                               }
+                           }
+                        }
+                    }
+                }
+            }
+        }
+    }
+     if(request.getParameter("Submit")!=null && request.getParameter("Submit").equals("Update"))
+     {
+         IsEdit=true;
+         ExamError=getExamError();
+        if(ExamError==null)
+        {
+            BranchError=getBranchError();
+            if(BranchError==null)
+            {
+                SemError=getSemError();
+                if(SemError==null)
+                {
+                    SubjectError=getSubjectError();
+                    if(SubjectError==null)
+                    {
+                        PRNError=getPRNErrorForEdit();
+                        if(PRNError==null)
+                        {
+                           MarkError=getMarkError();
+                           if(MarkError==null)
+                           {
+                               if(request.getParameter("InternalEdit")!=null && request.getParameter("InternalEdit").equals("Yes") )
+                               {
+                                   RemarksError=getRemarksError();
+                               }
+                               if(RemarksError==null)
+                               {
+                              IsSaved=mark.UpdateMarkofStudent(absent.getStudentIdFromPRN(PRN), ExamId, SubjectBranchId,Mark,Internal,Remarks,Id);
+                              if(IsSaved)
+                              {
+                                  if(mark.SaveMarkEntryLog(absent.getStudentIdFromPRN(PRN), SubjectBranchId, ExamId,1, request))
+                                  {
+//                                      if(mark.IsStudentFailedForSubject(Mark, SubjectBranchId))
+//                                      {
+//                                          MarkError="Failed";
+//                                      }
+                                        PRN=null;
+                                        ExamId="-1";
+                                        BranchId="-1";
+                                        Sem=-1;
+                                        SubjectBranchId="-1";
+                                        Mark=-1.0;
+                                        Internal=-1;
+                                        Remarks=null;
+                                        IsEdit=false;
+                                  }
+                              }
+                               }
+                           }
+                        }
+                    }
+                }
+            }
+        }
+     }
+        if(request.getParameter("submit")!=null && request.getParameter("submit").equals("Send for Approval"))
+        {
+            //Studentmark=request.getParameterValues("StudentSubjectMarkId");
+            Studentmark=new ArrayList<StudentSubjectMark>();
+            StudentSubjectMark Student;
+            if(request.getParameterValues("StudentMarkId")!=null)
+                {
+                String Stu[]=request.getParameterValues("StudentMarkId");
+                 for (String SId : Stu)
+                 {
+                    Student=new StudentSubjectMark();
+                    Student.StudentSubjectMarkId=SId;
+                    Studentmark.add(Student);
+                 }
+            }
+            IsSendForApproval=mark.SendMarksForApproval(Studentmark);
+            IsEdit=false;
+        }
+        if(request.getParameter("Search")!=null && request.getParameter("Search").equals("Search"))
+        {
+            Search=true;
+        }
+    }
+
+    private void FillSubjectDetails() throws SQLException
+    {
+        if(SubjectBranchId!=null &&(! SubjectBranchId.equals("-1")))
+        {
+        Subject subject=absent.getBranchFromSubjectBranchId(SubjectBranchId);
+        Integer Id=absent.getCurrentExamId();
+        ExamId=Id.toString();
+        BranchId=subject.BranchId;
+        Sem=Integer.parseInt(subject.YearSem);
+        SubjectBranchId=subject.SubjectBranchId;
+        }
+
+    }
+    public String getApprovedQuery()
+    {
+        String Query="select SQL_CALC_FOUND_ROWS distinct sp.StudentName,sp.PRN,s.SubjectName,sb.SubjectBranchId ,sm.ExternalMark,sm.InternalMark,sm.StudentSubjectMarkId,sm.IsSOVerified from StudentPersonal sp,StudentSubjectMark sm,SubjectBranchMaster sb,SubjectMaster s,MarkEntryLog m where sp.StudentId=sm.StudentId and sm.SubjectBranchId=sb.SubjectBranchId ";
+        Query+=" and s.SubjectId=sb.SubjectId and sm.StudentSubjectMarkId=m.StudentSubjectMarkId and m.Privilege=33 and m.UserName=? and sm.IsAssistantVerified=1 and IsValid=1 ";
+        if(Search)
+        {
+            if(BranchId!=null && (!BranchId.equals("-1")))
+            {
+                Query+=" and sp.BranchId="+BranchId;
+
+            }
+            if(SubjectBranchId!=null && (!SubjectBranchId.equals("-1")))
+            {
+                Query+=" and sb.SubjectBranchId="+SubjectBranchId;
+            }
+            if(PRN!=null && (!PRN.isEmpty()))
+            {
+                Query+=" and sp.PRN='"+PRN+"'";
+            }
+        }
+        Query+=" order by sb.SubjectBranchId,sp.PRN";
+        return Query;
+    }
+    
+    private void FillDataForEdit() throws SQLException
+    {
+        StudentSubjectMark studentMark=new StudentSubjectMark();
+        studentMark=mark.getSelectedStudentMark(Id);
+        ExamId=studentMark.ExamId;
+        BranchId=studentMark.BranchId;
+        Sem=studentMark.Sem;
+        SubjectBranchId=studentMark.SubjectBranchId;
+        PRN=studentMark.PRN;
+        Mark=Double.parseDouble(studentMark.ExternalMark);
+        Internal=Integer.parseInt(studentMark.InternalMark);
+        Remarks=studentMark.Remarks;
+    }
+    public String getiPageNo()
+    {
+        if(request.getParameter("AV")==null)
+        {
+           return request.getParameter("iPageNo");
+        }
+        else
+        {
+             if(request.getSession().getAttribute("iPageNo")!=null)
+             {
+                 return request.getSession().getAttribute("iPageNo").toString();
+             }
+             return  null;
+        }
+    }
+    public String getcPageNo()
+    {
+        if(request.getParameter("AV")==null)
+        {
+           return request.getParameter("cPageNo");
+        }
+        else
+        {
+             if(request.getSession().getAttribute("cPageNo")!=null)
+             {
+                 return request.getSession().getAttribute("cPageNo").toString();
+             }
+             return  null;
+        }
+    }
+public String getRemarks()
+{
+    if(Remarks==null)
+    {
+        return "";
+    }
+    return Remarks;
+}
+
+public String RemarksError()
+{
+    return RemarksError;
+}
+
+public boolean getIsEdit()
+{
+    return IsEdit;
+}
+
+public String MarkError()
+{
+    return MarkError;
+}
+
+public String ExamError()
+{
+    return ExamError;
+}
+
+public String BranchError()
+{
+    return BranchError;
+}
+
+public String SemError()
+{
+    return SemError;
+}
+
+public String SubjectError()
+{
+    return SubjectError;
+}
+
+public String PRNError()
+{
+    return PRNError;
+}
+
+public String getIssaved()
+{
+    if(IsSaved)
+    {
+        return "Saved Successfully";
+    }
+    return null;
+}
+
+public String getRemarksError()
+{
+    if(Remarks==null || Remarks.isEmpty())
+    {
+        return "Enter Remarks";
+    }
+    else
+    {
+        return null;
+    }
+}
+
+public String getIsSendForApproval()
+{
+    if(IsSendForApproval)
+    {
+        return "Records Successfully send for approval";
+    }
+    return null;
+}
+
+public String getSemYear()
+{
+    if(Sem!=-1)
+    return Sem.toString();
+    else
+        return "-1";
+}
+
+public String getMark()
+{
+    if(Mark==-1.0)
+        return "";
+    else
+        return Mark.toString();
+}
+
+public String getInternalMark()
+{
+    if(Internal==-1)
+        return "";
+    else
+        return Internal.toString();
+}
+
+public String getExam()
+{
+    return ExamId;
+}
+
+public String getBranch()
+{
+//    if(request.getSession().getAttribute("BranchId")!=null)
+//    return request.getSession().getAttribute("BranchId").toString();
+//   else
+        return BranchId;
+}
+
+public String getSubject()
+{
+    return SubjectBranchId;
+}
+
+public String getPRN()
+{
+    if(PRN==null)
+    {
+      return "";
+    }
+    else
+      return PRN;
+}
+
+public String getSemError()
+{
+    if(Sem==-1)
+    {
+        return "Select Semester/Year";
+    }
+    return null;
+}
+
+public String getMarkError() throws SQLException
+{
+    if(Mark==-1)
+    {
+        return "Enter Mark";
+    }
+    else
+    {
+        int MaxMark=mark.getMaximumMarkForSubject(SubjectBranchId);
+        if(MaxMark==0)
+        {
+            if(Mark<0)
+            {
+                return "Invalid Mark Entered";
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            if(Mark<0 || Mark >MaxMark )
+            {
+                return "Invalid Mark Entered";
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+}
+
+public String getExamError()
+{
+    if(ExamId.equals("-1"))
+    {
+        return "Select Exam";
+    }
+    return null;
+}
+
+public String getBranchError()
+{
+    if(BranchId.equals("-1"))
+    {
+        return "Select Course";
+    }
+    return null;
+}
+
+public String getSubjectError() throws SQLException
+{
+    int Abs=absent.getTotalCountOfAbsenteeForSubject(SubjectBranchId, ExamId);
+    if(SubjectBranchId.equals("-1"))
+    {
+        return "Select Subject";
+    }
+//    else if(Abs>0)
+//    {
+//        if(absent.getTotalCountOfAbsenteesEntered(SubjectBranchId)<Abs)
+//        {
+//            return "Can not begin mark entry for this subject since Absentees entry is not completed";
+//        }
+//    }
+    return null;
+}
+
+public String getPRNError() throws SQLException
+{
+    if(PRN==null ||PRN.isEmpty())
+    {
+        return "Enter PRN";
+    }
+    else if(PRN.length()<13)
+    {
+        return "Invalid PRN";
+    }
+    else if(mark.IsStudentMarkAlreadyEntered(absent.getStudentIdFromPRN(PRN), SubjectBranchId, ExamId))
+    {
+        return "Mark Already entered for this student";
+    }
+    else if(absent.IsStudentBelongToCourse(PRN, BranchId)==false)
+    {
+            return "Student Does not belong to Selected Course";     
+    }
+    else if(IsStudentAbsentForSubject())
+    {
+        return "Student is absent for this subject";
+    }
+    else if(!IsStudentExamFeePaid())
+    {
+        return "Exam Fee is not Paid for this student";
+    }
+    else if(mark.IsStudentUnconfirmedForSubject(absent.getStudentIdFromPRN(PRN), SubjectBranchId, ExamId) )
+    {
+     return "Student is marked as withheld for this subject";
+    }
+    else
+    {
+        return null;
+    }
+}
+
+public boolean IsMarkVerificationCompletedForBranch() throws SQLException
+{
+    return mark.IsMarkVerificationCompletedForBranch(BranchId, Sem,ExamId);
+}
+
+public String getPRNErrorForEdit() throws SQLException
+{
+    if(PRN==null ||PRN.isEmpty())
+    {
+        return "Enter PRN";
+    }
+    else if(PRN.length()<13)
+    {
+        return "Invalid PRN";
+    }
+    else if(absent.IsStudentBelongToCourse(PRN, BranchId)==false)
+    {
+            return "Student Does not belong to Selected Course";
+    }
+    else if(IsStudentAbsentForSubject())
+    {
+        return "Student is absent for this subject";
+    }
+    else if(mark.IsStudentMarkAlreadyEnteredForEdit(absent.getStudentIdFromPRN(PRN), SubjectBranchId, ExamId, Id))
+    {
+        return "Mark Already entered for the student";
+    }
+    else if(!IsStudentExamFeePaid())
+    {
+        return "Exam Fee is not Paid for this student";
+    }
+    else if(mark.IsStudentUnconfirmedForSubject(absent.getStudentIdFromPRN(PRN), SubjectBranchId, ExamId) )
+    {
+     return "Student is marked as withheld for this subject";
+    }
+    else
+    {
+        return null;
+    }
+}
+
+public ArrayList<CourseData> getBranchList() throws SQLException
+{
+    return absent.getBranchList();
+}
+
+public ArrayList<ExamData> getExams() throws SQLException
+{
+    return absent.getExams();
+}
+
+public int getMaxYearOrSemForCourse() throws SQLException
+{
+    return absent.getMaxYearOrSemForCourse(BranchId);
+}
+
+public String getSubjectNameFromSubjectBranchId() throws SQLException
+{
+    return absent.getSubjectNameFromSubjectBranchId(SubjectBranchId);
+}
+
+public ArrayList<Subject> getSubjectsForCourse() throws SQLException
+{
+    Subjects sub=new Subjects();
+    return sub.getSubjectsForBranch(BranchId, Sem);
+}
+
+public int getTotalAbsenteesEnteredForSubjectWithoutFee() throws SQLException
+{
+    return absent.getTotalAbsenteesEnteredForSubjectWithoutFee(SubjectBranchId, Sem, ExamId);
+}
+public ArrayList<Subject> getAllSubjectsForCourse() throws SQLException
+{
+    Subjects sub=new Subjects();
+    return sub.getAllSubjectsForBranch(BranchId);
+}
+
+public boolean IsStudentAbsentForSubject() throws SQLException
+{
+    return mark.IsStudentAbsentForSubject(absent.getStudentIdFromPRN(PRN), SubjectBranchId, ExamId);
+}
+
+public boolean IsStudentExamFeePaid() throws SQLException
+{
+    return mark.IsStudentExamFeePaid(absent.getStudentIdFromPRN(PRN), ExamId);
+}
+
+public ArrayList<StudentSubjectMark> getMarksEnteredByUser() throws SQLException
+{
+    return mark.getMarksEnteredByUser(request.getSession().getAttribute("UserName").toString());
+}
+
+private String PRNAutoIncrement()
+{
+    String Temp=PRN;
+    String front=PRN.substring(0,8);
+
+    Integer nextPRN=Integer.parseInt(PRN.substring(8))+1;
+    return front+nextPRN.toString();
+}
+
+public int TotalRecordsEnteredByUser() throws SQLException
+{
+    return mark.TotalRecordsEnteredByUser(request.getSession().getAttribute("UserName").toString());
+}
+
+public long CalculateInternal() throws SQLException
+{
+    return mark.CalculateInternal(Mark, SubjectBranchId);
+}
+
+public boolean IsSubjectHasInternal() throws SQLException
+{
+    return mark.IsSubjectHasInternal(SubjectBranchId);
+}
+
+public boolean IsSubjectHasNoInternalCalculation() throws SQLException
+{
+    return mark.IsSubjectHasNoInternalCalculation(SubjectBranchId);
+}
+}

@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/OffCampus/!svn/ver/57/src/java/Controller
+END
+AbsenteesCount.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/OffCampus/!svn/ver/57/src/java/Controller/AbsenteesCount.java
+END
+PendingPRNForAbsentee.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/OffCampus/!svn/ver/67/src/java/Controller/PendingPRNForAbsentee.java
+END
+FalseNoTOAssistant.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/OffCampus/!svn/ver/1/src/java/Controller/FalseNoTOAssistant.java
+END
+LoginCheck.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/OffCampus/!svn/ver/1/src/java/Controller/LoginCheck.java
+END
+Logout.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/OffCampus/!svn/ver/1/src/java/Controller/Logout.java
+END
+ModerationPreperation.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/OffCampus/!svn/ver/48/src/java/Controller/ModerationPreperation.java
+END
+Statistics.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/OffCampus/!svn/ver/20/src/java/Controller/Statistics.java
+END
+AbsenteesEntry.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/OffCampus/!svn/ver/67/src/java/Controller/AbsenteesEntry.java
+END
+UserManagement.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/OffCampus/!svn/ver/26/src/java/Controller/UserManagement.java
+END
+LoginController.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/OffCampus/!svn/ver/1/src/java/Controller/LoginController.java
+END
+MarkEntryPRN.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/OffCampus/!svn/ver/67/src/java/Controller/MarkEntryPRN.java
+END
+MarkVerification.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/OffCampus/!svn/ver/64/src/java/Controller/MarkVerification.java
+END
+AssistantToSO.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/OffCampus/!svn/ver/1/src/java/Controller/AssistantToSO.java
+END

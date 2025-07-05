@@ -1,0 +1,389 @@
+K 25
+svn:wc:ra_dav:version-url
+V 30
+/svn/OffCampus/!svn/ver/56/web
+END
+YearOrSemForAbsentee.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/OffCampus/!svn/ver/1/web/YearOrSemForAbsentee.jsp
+END
+header.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/OffCampus/!svn/ver/1/web/header.jsp
+END
+SubjectWiseMarkEntryStatus.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/OffCampus/!svn/ver/53/web/SubjectWiseMarkEntryStatus.jsp
+END
+UpdateMarkBySO.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/OffCampus/!svn/ver/1/web/UpdateMarkBySO.jsp
+END
+Navigation_ExamAR.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/OffCampus/!svn/ver/1/web/Navigation_ExamAR.jsp
+END
+navigation.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/OffCampus/!svn/ver/1/web/navigation.jsp
+END
+DeleteUser.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/OffCampus/!svn/ver/56/web/DeleteUser.jsp
+END
+UserCreation.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/OffCampus/!svn/ver/56/web/UserCreation.jsp
+END
+MarkEntryForPRN.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/OffCampus/!svn/ver/66/web/MarkEntryForPRN.jsp
+END
+ModerationPreperation.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/OffCampus/!svn/ver/60/web/ModerationPreperation.jsp
+END
+FalseNoVerificationAR.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/1/web/FalseNoVerificationAR.jsp
+END
+Header_Assistant.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/OffCampus/!svn/ver/1/web/Header_Assistant.jsp
+END
+AbsenteesCount.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/56/web/AbsenteesCount.jsp
+END
+StatisticsOfSubjects.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/19/web/StatisticsOfSubjects.jsp
+END
+AssistantVerifiedList.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/OffCampus/!svn/ver/63/web/AssistantVerifiedList.jsp
+END
+MarkVerificationSOforPRN.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/OffCampus/!svn/ver/1/web/MarkVerificationSOforPRN.jsp
+END
+ResultStatistics.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/OffCampus/!svn/ver/47/web/ResultStatistics.jsp
+END
+AssistantToSOMapping.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/56/web/AssistantToSOMapping.jsp
+END
+DeleteAbsentees.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/OffCampus/!svn/ver/56/web/DeleteAbsentees.jsp
+END
+CourseWiseStatus.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/OffCampus/!svn/ver/66/web/CourseWiseStatus.jsp
+END
+footer.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/OffCampus/!svn/ver/1/web/footer.jsp
+END
+MarkVerificationSO.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/OffCampus/!svn/ver/56/web/MarkVerificationSO.jsp
+END
+Instructions.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/OffCampus/!svn/ver/63/web/Instructions.jsp
+END
+SubjectDetails.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/66/web/SubjectDetails.jsp
+END
+LoginPage.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/OffCampus/!svn/ver/1/web/LoginPage.jsp
+END
+SubjectWisePRN.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/66/web/SubjectWisePRN.jsp
+END
+Navigation_Home.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/1/web/Navigation_Home.jsp
+END
+Absentees.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/OffCampus/!svn/ver/56/web/Absentees.jsp
+END
+PendingPRNVerificationSO.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/OffCampus/!svn/ver/66/web/PendingPRNVerificationSO.jsp
+END
+ViewAllSubjectsOfCourse.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/OffCampus/!svn/ver/1/web/ViewAllSubjectsOfCourse.jsp
+END
+ExaminerDetails.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/1/web/ExaminerDetails.jsp
+END
+SOInstruction.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/OffCampus/!svn/ver/63/web/SOInstruction.jsp
+END
+ViewSubjectList.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/1/web/ViewSubjectList.jsp
+END
+InternalCalculation.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/OffCampus/!svn/ver/1/web/InternalCalculation.jsp
+END
+PendingPRNList.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/66/web/PendingPRNList.jsp
+END
+Header_Home.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/OffCampus/!svn/ver/63/web/Header_Home.jsp
+END
+Navigation_ExamAssistant.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/OffCampus/!svn/ver/66/web/Navigation_ExamAssistant.jsp
+END
+ARInstruction.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/OffCampus/!svn/ver/62/web/ARInstruction.jsp
+END
+YearOrSemester.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/OffCampus/!svn/ver/1/web/YearOrSemester.jsp
+END
+CountAbsenteesAndMalPractice.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/OffCampus/!svn/ver/1/web/CountAbsenteesAndMalPractice.jsp
+END
+Navigation_ExamSO.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/OffCampus/!svn/ver/66/web/Navigation_ExamSO.jsp
+END
+RecorsdsEnteredandNotVerified.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/OffCampus/!svn/ver/1/web/RecorsdsEnteredandNotVerified.jsp
+END
+ApprovedMarks.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/OffCampus/!svn/ver/63/web/ApprovedMarks.jsp
+END
+MarkVerificationAR.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/OffCampus/!svn/ver/1/web/MarkVerificationAR.jsp
+END
+PRNFalseNoMapping.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/OffCampus/!svn/ver/47/web/PRNFalseNoMapping.jsp
+END
+ViewYearOrSemForStatistics.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/OffCampus/!svn/ver/6/web/ViewYearOrSemForStatistics.jsp
+END
+MarkEntering.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/OffCampus/!svn/ver/1/web/MarkEntering.jsp
+END
+ErrorPage.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/OffCampus/!svn/ver/1/web/ErrorPage.jsp
+END
+Header_SO.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/OffCampus/!svn/ver/1/web/Header_SO.jsp
+END
+SubjectListForAbsentees.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/OffCampus/!svn/ver/1/web/SubjectListForAbsentees.jsp
+END
+FalseNoVerificationSO.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/1/web/FalseNoVerificationSO.jsp
+END
+FalseNoToAssistantMapping.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/OffCampus/!svn/ver/1/web/FalseNoToAssistantMapping.jsp
+END
+ARStatusReport.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/OffCampus/!svn/ver/66/web/ARStatusReport.jsp
+END
+ViewAllSubjectsForSearch.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/OffCampus/!svn/ver/66/web/ViewAllSubjectsForSearch.jsp
+END
+ExaminerPRNMapping.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/OffCampus/!svn/ver/1/web/ExaminerPRNMapping.jsp
+END
+ResetPassword.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/OffCampus/!svn/ver/1/web/ResetPassword.jsp
+END
+newjsp.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/OffCampus/!svn/ver/47/web/newjsp.jsp
+END
+UserWiseMarkEntryStatus.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/OffCampus/!svn/ver/1/web/UserWiseMarkEntryStatus.jsp
+END
+DeleteAssignedAssistant.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/OffCampus/!svn/ver/56/web/DeleteAssignedAssistant.jsp
+END
+InstructionAssistant.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/63/web/InstructionAssistant.jsp
+END
+Support.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/OffCampus/!svn/ver/1/web/Support.jsp
+END
+CountOfMarksVerifiedByAssistant.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/OffCampus/!svn/ver/1/web/CountOfMarksVerifiedByAssistant.jsp
+END
+ViewAssistantsofSO.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/OffCampus/!svn/ver/1/web/ViewAssistantsofSO.jsp
+END
+HeaderLogin.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/OffCampus/!svn/ver/1/web/HeaderLogin.jsp
+END

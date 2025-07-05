@@ -1,0 +1,387 @@
+<%--
+    Document   : AR status Report
+    Created on : Oct 31, 2011, 3:46:06 PM
+    Author     : user
+--%>
+
+
+<%@page contentType="text/html" pageEncoding="UTF-8" import="java.util.*,java.sql.*,Controller.*,java.util.ArrayList,Entity.*,model.*" %>
+<%
+if(request.getSession().getAttribute("UserName")==null){
+response.sendRedirect(response.encodeRedirectURL("/OffCampus/LoginPage.jsp?message=Session Time Out.Login again"));
+}else{
+LoginController login=new LoginController(request, response);
+int Role=login.getPrivilege(request.getSession().getAttribute("UserName").toString());
+if(Role!=31)
+    {
+        response.sendRedirect(response.encodeRedirectURL("/OffCampus/LoginPage.jsp?message=YOU ARE NOT PERMITTED TO ACCESS THE PAGE"));
+    }
+request.getSession().setAttribute("UserName", "OffCampus");
+UserManagement User=new UserManagement(request, response);
+AbsenteesCount absentee=new AbsenteesCount(request,response);
+model.Absentees abs=new model.Absentees();
+MarkEntryPRN mark=new MarkEntryPRN(request, response);
+%>
+<html><head>
+
+
+		<title>DEMS</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-2">
+                <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+                <script type="text/javascript" src="./js/Absentee.js"></script>
+                <script type="text/javascript" src="./js/StatusHide.js"></script>
+		<style type="text/css">
+<!--
+body
+{
+        background-image:  url();
+        margin-left: 0px;
+        margin-top: 0px;
+        margin-right: 0px;
+        margin-bottom: 0px;
+        background-color: #FFFFFF;
+}
+-->
+        </style>
+<link rel="Stylesheet" href="Style/style.css" type="text/css">
+
+
+
+	<style type="text/css">
+<!--
+.style1 {color: #0099CC}
+-->
+        </style>
+	    </head><body onload="showonlyonev2(null);">
+	<!-- rpm find linux search -->
+<table width="90%" align="center" border="0" cellpadding="0" cellspacing="0">
+<tbody>
+<jsp:include page="Header_Home.jsp"/>
+<tr><td>
+<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+  <tbody><tr valign="top" align="left">
+          <td width="200" bgcolor="#e8dec3">
+<jsp:include page="Navigation_Home.jsp"/>
+       </td>
+    <td width="20" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="20"></td>
+    <td width="90%">
+      <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0"  >
+      <tbody><tr>
+        <td colspan="5" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="609"></td>
+      </tr>
+      <tr >
+        <td width="16" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="18" width="8"></td>
+	<td>
+<div class="textblack"></div>	</td>
+        <td bgcolor="#ffffff" >&nbsp;
+            <%-- Content --%>
+            
+                <div  style=" font-size: small;width: 650px" align="left" >
+                   
+                        <table >
+                            <tr >
+                                <td >
+                                    <font color="#7e1917"> <b>Total Number of Students Registered for Exam : <%=User.getTotalCountOfStudentsRegisteredForExam() %></b></font></td>
+                                <td>
+                        
+                            </tr>
+                        </table>
+            </div>
+     <br>
+
+            <div  class="shadow" style="width:200px;height: 30px; border-color:#c64444; border-style: ridge;font-size: small; padding-top: 5px" align="center" >
+
+                 <a id="myHeader1-2" href="javascript:showonlyonev2('newboxes1-2');"> Mark Entry Status-Userwise >> </a>
+                
+            
+            </div>
+     <div name="newboxes-2" id="newboxes1-2" style="  display: block;padding: 5px; width: 70%">
+         
+         <table border="1" style="border-color: maroon;border-style: ridge"  cellspacing="0" cellpadding="3" width="100%">
+                    <tr class="textblack" bgcolor="#e8dec3" align="center">
+                         <th>Name</th>
+                         <th>Designation</th>
+                         <th>Mark Entry</th>
+                         <th>Mark Verification</th>
+                         <th>Absentees</th>
+                         <th>MalPractice</th>
+                         
+                    </tr>
+                    <%
+                    ArrayList<User> UserList=new ArrayList<User>();
+                    UserList=User.getAllUsersInDesignationOrder();
+                    int Count= UserList.size(),i=0;
+                    int TotalAbs=0,TotalMal=0,TotalMark=0,TotalVerified=0;
+                    while(i<Count)
+                        {
+                        User us=UserList.get(i);
+                        String User_Assign=null;
+                        int Abs=User.getTotalAbsenteesEnteredByUser(us.UserName);
+                        int Mal=User.getTotalMalEnteredByUser(us.UserName) ;
+                        int MarkE=User.getTotalMarkEnteredByUser(us.UserName);
+                        int MarkVer=User.getTotalMarkVerifiedByUser(us.UserName);
+
+                        TotalAbs+=Abs;
+                        TotalMal+=Mal;
+                        TotalMark+=MarkE;
+                        TotalVerified+=MarkVer;
+                    %>
+                    <tr >
+                        <td class="textblack"><%=us.Name %></td>
+                        <td class="textblack"><%=us.Category %></td>
+                        <%if(us.Privilege.equals("32")) {%>
+                        <td class="textblack"><font color="#19610f">Not Applicable</font></td>
+                        <% }else{%>
+                        <td class="textblack"><%=MarkE %></td><% } %>
+                        <%if(us.Privilege.equals("33")) {%>
+                        <td class="textblack"><font color="#19610f">Not Applicable</font></td>
+                        <% }else{%>
+                        <td class="textblack"><%=MarkVer%></td><% } %>
+                        <%if(us.Privilege.equals("33")) {%>
+                        <td class="textblack"><font color="#19610f">Not Applicable</font></td>
+                        <% }else{%>
+                        <td class="textblack"><%=Abs%></td><% } %>
+                        <%if(us.Privilege.equals("33")) {%>
+                        <td class="textblack"><font color="#19610f">Not Applicable</font></td>
+                        <% }else{%>
+                        <td class="textblack"><%=Mal %></td><% } %>
+                        
+                       
+                    </tr>
+                    <% i++;} %>
+                    <tr>
+                        <td colspan="2" align="right" class="textblack"><b> Total :</b></td>
+
+                        <td class="textblack"><b><%=TotalMark%></b></td>
+                        <td class="textblack"><b><%=TotalVerified%></b></td>
+                        <td class="textblack"><b><%=TotalAbs%></b></td>
+                        <td class="textblack"><b><%=TotalMal%></b></td>
+                    </tr>
+                </table>
+     </div>
+
+     <p>
+            <div class="shadow" style="width:200px;height: 30px; border-color:#c64444; border-style: ridge;font-size: small; padding-top: 5px" align="center" >
+
+                 <a id="myHeader2-2" href="javascript:showonlyonev2('newboxes2-2');" >
+                Mark Entry Status-Coursewise >> </a>
+                 </div>
+            <div name="newboxes-2" id="newboxes2-2" style=" border-color: maroon;border-style:ridge; display: none;padding: 5px; width: 100%">
+                <fieldset style="width:97%"><legend><span style="color:#a02a28; font-size: small"><b>Search</b></span></legend>
+                                <table>
+                                    <tr>
+                                         <td class="textblack">Course</td>
+                                <td>
+                                    <select name="CourseSearch" id="CourseSearch" style="width: 300px" onchange="ViewAllSubjectListForSearch();">
+                                <option value="-1">.....Select.....</option>
+                                           <% ArrayList<Entity.CourseData> BranchList=absentee.getBranchList();
+                                            i=0;
+                                           int count=BranchList.size();
+
+                                                    while(i<count)
+                                                        {
+                                                        Entity.CourseData Course=BranchList.get(i);
+                                            %>
+                                            <option <%if(Integer.parseInt(absentee.getCourseSearch())==Course.BranchId) { out.print("selected");} %>
+                                                value="<%=Course.BranchId %>"><%=Course.BranchName %></option>
+
+                                            <%i++; }
+                                            %>
+
+                            </select>
+                                </td>
+                              
+                                    </tr>
+                                    <tr>
+
+                                        <td class="textblack">Subject</td>
+                                <td>
+                                    <div id="SubjectListSearch">
+                                        <select name="SubjectSearch" id="SubjectSearch" style="width: 330px" onchange="ViewSubjectWiseMarkEntryStatus();">
+                                            <option value="-1">.....Select.....</option>
+                                            <% ArrayList<Subject> SubjectList=absentee.getAllSubjectsForSearch();
+                                           i=0;
+                                           if(SubjectList!=null)
+                                               {
+                                          count=SubjectList.size();
+                                            if(count!=0)
+                                                {
+                                                    while(i<count)
+                                                        {
+                                                        Subject sub=SubjectList.get(i);
+                                            %>
+                                           <option
+                                                value="<%=sub.SubjectBranchId %>"><%=sub.SubjectName %></option>
+
+                                            <%i++; }}}
+                                            %>
+                                 %>
+                            </select>
+                                 </div>
+                                </td>
+                                     <td colspan="2" align="left"  class="textblack">
+
+                                         <%--input type="submit" name="Search" id="Search" value="Search"--%>
+                                     </td>
+                                    </tr>
+                                </table>
+                            </fieldset>
+                                     <div id="MarkEntryStatusForCourse">
+                                         <%
+                                         
+                                            Integer ExamId=abs.getCurrentExamId();
+                                            ArrayList<Subject> Subj=mark.getAllSubjectsForCourse();
+                                             Count=Subj.size();
+                                             i=0;
+                                            if(Count!=0)
+                                                {
+                                         %>
+                                         <table border="1" style="border-style: groove" cellspacing="0" cellpadding="3" width="100%">
+                                             <tr class="textblack" bgcolor="#e8dec3" align="center">
+                                                 <th>Subject</th>
+                                                 <th>Semester</th>
+                                                 <th>Total Registration</th>
+                                                 <th>Total Answer Scripts</th>
+                                                 <th>Mark Entered</th>
+                                                 <th>Mark Verified</th>
+                                                 <th>MarkEntry Pending</th>
+                                                 <th>Absentees (Registered) </th>
+                                                 <th>Absentees(Not Registered) </th>
+                                                 <th>MalPractice </th>
+                                                 <th>Withheld (Unconfirmed)</th>
+                                                 <th>Status</th>
+                                            </tr>
+                                            <%
+                                            int PrevSem=0;
+                                            while(i<Count)
+                                                {
+                                                Subject Sub=new Subject();
+
+                                                Sub=Subj.get(i);
+                                                String Status=null,bgcolor=null;
+                                                int TotalStudents=abs.getTotalCountOfStudentsForSubject(Sub.SubjectBranchId,ExamId.toString());
+                                                int MarkEntered=abs.getTotalCountOfMarkEnteredForSubject(Sub.SubjectBranchId,ExamId.toString());
+                                                int AbsEntered=abs.getTotalCountOfAbsenteesEntered(Sub.SubjectBranchId);
+                                                int Unconfirmed=abs.getTotalCountOfUnconfirmedStudents(Sub.SubjectBranchId);
+                                                int MarkVer=0;
+                                                //int TotalMalPractice=abs.getTotalCountOfMalPracticeForSubject(Sub.SubjectBranchId,ExamId.toString());
+                                                int MalPracticeEntered=abs.getTotalCountOfMalPracticeEntered(Sub.SubjectBranchId);
+                                                //int Abs=abs.getTotalCountOfAbsenteeForSubject(Sub.SubjectBranchId,ExamId.toString());
+                                                 int TotalAbsWithOutFee=abs.getTotalAbsenteesEnteredForSubjectWithoutFee(Sub.SubjectBranchId, Integer.parseInt(Sub.YearSem), ExamId.toString());
+                                                int TotalScripts=((TotalStudents-(AbsEntered-TotalAbsWithOutFee))-MalPracticeEntered);
+                                                if(TotalScripts<0)
+                                                    {
+                                                        TotalScripts=0;
+                                                    }
+                                                int MarkEntryPending=TotalScripts-MarkEntered-Unconfirmed;
+                                                if(MarkEntryPending<0)
+                                                    {
+                                                        MarkEntryPending=0;
+                                                    }
+                                                int MarkVerified=abs.getTotalCountOfMarkVerifiedForSubject(Sub.SubjectBranchId,ExamId.toString());
+
+
+                                                if(TotalStudents==MarkEntered+(AbsEntered-TotalAbsWithOutFee)+MalPracticeEntered+Unconfirmed && MarkEntered==MarkVerified )
+                                                    {
+                                                    if(TotalStudents==0)
+                                                        {
+                                                         Status=" ";
+                                                        }
+                                                    else
+                                                        {
+                                                         Status="Completed";
+                                                         bgcolor="#19610f";
+                                                        }
+                                                    }
+                                                else
+                                                    {
+                                                     Status="Pending";
+                                                     bgcolor="#d84937";
+                                                    }
+                                            %>
+                                            <% if(PrevSem!=Integer.parseInt(Sub.YearSem)){%>
+                                            <tr>
+                                                <td colspan="12" align="center" valign="middle"><h5><font color="#7e1917"><%=Sub.YearSem %></font></h5></td>
+                                            </tr><%}%>
+                                            <tr>
+                                                <td class="textblack"><%=Sub.SubjectName %></td>
+                                                <td class="textblack"><%=Sub.YearSem %></td>
+                                                <td class="textblack"><%=TotalStudents %></td>
+                                                <td class="textblack"><%=TotalScripts %></td>
+                                                <td class="textblack"><%=MarkEntered %></td>
+                                                <td class="textblack"><%=MarkVerified %></td>
+                                                <td class="textblack"><%=MarkEntryPending %></td>
+                                                <td class="textblack"><%=AbsEntered-TotalAbsWithOutFee %></td>
+                                                <td class="textblack"><%=TotalAbsWithOutFee %></td>
+                                                <td class="textblack"><%=MalPracticeEntered %></td>
+                                                <td class="textblack"><%=Unconfirmed %></td>
+                                                <td class="textblack" ><font color="<%=bgcolor %>"><%=Status %></font></td>
+                                            </tr>
+                                            <% i++; PrevSem=Integer.parseInt(Sub.YearSem);}%>
+                                         </table><% }%>
+                                     </div>
+                                         <br>
+                                 <div id="MarkEntryStatusForSubject">
+                                     <%
+                                      ArrayList<UserWiseCount> UserCount=User.getMarkEntryCount(request.getParameter("SubjectSearch"));
+                    Count= UserCount.size();i=0;
+                    if(Count!=0)
+                        {
+                                     %>
+               <table border="1" style="border-style: groove" cellspacing="0" cellpadding="3" >
+                     <tr class="textblack" bgcolor="#e8dec3" align="center">
+                         <th>Name</th>
+                         <th>Designation</th>
+                         <th>Mark Entry</th>
+                         <th>Mark Verification</th>  
+                    </tr>
+                    <%                   
+                    //int TotalAbs=0,TotalMal=0,TotalMark=0,TotalVerified=0;
+                    
+                    while(i<Count)
+                        {
+                        UserWiseCount us=UserCount.get(i);
+                        String User_Assign=null;
+                        int Abs=User.getTotalMarkEnteredByUser(us.UserName);
+                        int Mal=User.getTotalMarkVerifiedByUser(us.UserName);
+                        int MarkE=User.getTotalAbsenteesEnteredByUser(us.UserName);
+                        int MarkVer=User.getTotalMalEnteredByUser(us.UserName) ;
+
+                        TotalMark+=us.MarkEntryCount ;
+                        TotalVerified+=us.MarkVerificationCount;
+                    %>
+                    <tr>
+                        <td class="textblack"><%=us.Name %></td>
+                        <td class="textblack"><%=us.Designation %></td>
+                         <%if(us.Designation.equals("Section Officer")) {%>
+                        <td class="textblack"><font color="#19610f">Not Applicable</font></td>
+                        <% } else{%>
+                        <td class="textblack"><%=us.MarkEntryCount %></td><% }%>
+                        <%if(us.Designation.equals("Assistant")) {%>
+                        <td class="textblack"><font color="#19610f">Not Applicable</font></td>
+                        <% } else{%>
+                        <td class="textblack"><%=us.MarkVerificationCount %></td><% }%>
+                       
+                    </tr>
+                    <% i++;} %>
+                    <tr>
+                        <td colspan="2" align="right" class="textblack"><b> Total :</b></td>
+                        <td class="textblack"><b><%=TotalMark%></b></td>
+                        <td class="textblack"><b><%=TotalVerified%></b></td>
+                    </tr>
+
+                </table><% } %></div>
+            </div>
+       
+
+                <%-- Content --%>
+        </td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+  <TR> <TD><br/></TD></TR>
+</tbody></table>
+</td></tr>
+</tbody></table>
+</body></html>
+<jsp:include page="footer.jsp"/><%}%>

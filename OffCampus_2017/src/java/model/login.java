@@ -1,0 +1,158 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class login
+{
+private  String UserName;
+private  String Password;
+private int Privilege=0;
+private  Connection con;
+    public login()
+    {
+       
+    }
+
+    public int getPrivilege(String UserName,String Password) throws SQLException
+    {
+        try
+        {
+    con=new DBConnection().getConnection();
+     PreparedStatement Query=con.prepareStatement("SELECT Privilege FROM MguClientLogin where UserName=? and Password=? and EndDate is null");
+    Query.setString(1, UserName);
+    Query.setString(2,Password);
+
+     ResultSet Data= Query.executeQuery();
+    if(Data.next())
+    {
+         if(Data.getInt("Privilege")==31)
+         {
+             return 1;
+         }
+         
+         else if(Data.getInt("Privilege")==32)
+         {
+             return 2;
+         }
+         else if(Data.getInt("Privilege")==33)
+         {
+             return 3;
+         }
+         else if(Data.getInt("Privilege")==35){
+             return 5;
+         }
+         }
+
+   return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            con.close();
+        }
+
+    }
+public String  getPassword() throws SQLException
+{
+    try
+    {
+        con=new DBConnection().getConnection();
+  PreparedStatement Query=con.prepareStatement("SELECT count(*),Password,Privilege FROM MguClientLogin where UserName=? and EndDate is null");
+  Query.setString(1, UserName);
+     ResultSet Data= Query.executeQuery();
+    if(Data.next())
+    {
+         if(Data.getInt(1)==1)
+         {
+               Privilege=Data.getInt(3);
+              return Data.getString(2);
+         }
+
+       return null;
+
+    }
+    else
+    {
+        return null;
+
+    }
+    }
+    catch (SQLException ex)
+        {
+            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        finally
+        {
+            con.close();
+        }
+
+}
+public int  getPrivilege(String User) throws SQLException
+{
+        try {
+            con = new DBConnection().getConnection();
+            PreparedStatement Query = con.prepareStatement("SELECT Privilege FROM MguClientLogin where UserName=?");
+            Query.setString(1, User);
+            ResultSet Data = Query.executeQuery();
+            if (Data.next()) {
+                    Privilege = Data.getInt(1);
+                    return Privilege;       
+            } 
+            else
+            {
+                return 0;
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            con.close();
+        }
+}
+    public boolean setPassword(String Password) throws SQLException
+{
+
+        try {
+            con=new DBConnection().getConnection();
+            PreparedStatement statement = con.prepareStatement("Update MguClientLogin set Password=? where UserName=? and Privilege in (31,32,33) and EndDate is null");
+            statement.setString(1, Password);
+            statement.setString(2, UserName);
+            statement.executeUpdate();
+            return true;
+        } 
+        catch (SQLException ex)
+        {
+            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            con.close();
+        }
+}
+    public void setUserName(String UserName)
+{
+    this.UserName=UserName;
+}
+    
+}
+

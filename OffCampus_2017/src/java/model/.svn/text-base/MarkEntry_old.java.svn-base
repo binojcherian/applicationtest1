@@ -1,0 +1,1697 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ * sunandha
+ */
+
+package model;
+
+import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import java.lang.Math;
+import Entity.*;
+import com.sun.net.httpserver.HttpContext;
+import java.net.InetAddress;
+
+
+public class MarkEntry
+{
+
+public ArrayList<StudentSubject> getAllSubjectsofStudent(String PRN,String YearSem) throws SQLException
+{
+     ArrayList<StudentSubject> StudentList=new ArrayList<StudentSubject>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select sp.StudentId,sp.StudentName,sp.BranchId,s.SubjectName,sb.SubjectBranchId from StudentPersonal sp,SubjectMaster s, SubjectBranchMaster sb,StudentSubjectBranchMap ss where sp.StudentId=ss.StudentId and s.SubjectId=sb.SubjectId and ss.SubjectBranchId=sb.SubjectBranchId and sb.CurrentYearSem=? and sp.PRN=?");
+            st.setString(1, YearSem);
+            st.setString(2, PRN);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                StudentSubject student=new StudentSubject();
+                student.StudentId=rs.getString("StudentId");
+                student.SubjectBranchId=rs.getString("SubjectBranchId");
+                student.SubjectName=rs.getString("SubjectName");
+
+                StudentList.add(student);
+            }
+            return StudentList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsStudentAbsentForSubject(int StudentId,String SubjectBranchId,String ExamId) throws SQLException
+{
+     Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark where StudentId=? and SubjectBranchId=? and ExamId=? and IsValid=1 and IsAbsent=1");
+            st.setInt(1, StudentId);
+            st.setString(2, SubjectBranchId);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsStudentUnconfirmedForSubject(int StudentId,String SubjectBranchId,String ExamId) throws SQLException
+{
+     Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark where StudentId=? and SubjectBranchId=? and ExamId=? and IsValid=1 and TempUnconfirmed=1");
+            st.setInt(1, StudentId);
+            st.setString(2, SubjectBranchId);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsStudentExamFeePaid(int StudentId,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from ExamRegistrationMaster where StudentId=? and ExamId=? ");
+            st.setInt(1, StudentId);
+            st.setString(2, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsStudentMarkAlreadyEntered(int StudentId,String SubjectBranchId,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark where StudentId=? and SubjectBranchId=? and ExamId=? and IsValid=1 and IsAbsent=0 and IsMalPractice=0 and TempUnconfirmed=0");
+            st.setInt(1, StudentId);
+            st.setString(2, SubjectBranchId);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsStudentMarkAlreadyEnteredForEdit(int StudentId,String SubjectBranchId,String ExamId,String StudentSubjectMarkId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark where StudentId=? and SubjectBranchId=? and ExamId=? and IsValid=1 and IsAbsent=0 and IsMalPractice=0 and TempUnconfirmed=0 and StudentSubjectMarkId!=?");
+            st.setInt(1, StudentId);
+            st.setString(2, SubjectBranchId);
+            st.setString(3, ExamId);
+            st.setString(4, StudentSubjectMarkId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int getMaximumMarkForSubject(String SubjectBranchId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select ExternalMax,TotalMark,HasInternal from SubjectBranchMaster where SubjectBranchId=?");
+            st.setString(1, SubjectBranchId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt("ExternalMax")>0)
+                {
+                    return rs.getInt("ExternalMax");
+                }
+                else
+                {
+                    return rs.getInt("TotalMark");
+                }
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsResultWithHeldForStudent(int StudentId,String SubjectBranchId,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark where StudentId=? and SubjectBranchId=? and ExamId=? and IsValid=1 and IsMalPractice=1");
+            st.setInt(1, StudentId);
+            st.setString(2, SubjectBranchId);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public String getStudentSubjectBranchId(int StudentId,String SubjectBranchId,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select StudentSubjectMarkId from StudentSubjectMark where StudentId=? and SubjectBranchId=? and ExamId=? and IsValid=1");
+            st.setInt(1, StudentId);
+            st.setString(2, SubjectBranchId);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getString(1);
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public String getExamIdFromStudentMark(String StudentSubjectMarkId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select ExamId from StudentSubjectMark where StudentSubjectMarkId=?");
+            st.setString(1, StudentSubjectMarkId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getString(1);
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean SaveStudentMarkForSubject(int StudentId,String ExamId,String SubjectBranchId,double ExternalMark,Integer InternalMark,String Remarks) throws SQLException
+{
+    Connection con=null;
+    PreparedStatement st=null;
+    int Status=IsStudentFailedForSubject(ExternalMark,Double.parseDouble(InternalMark.toString()),SubjectBranchId);
+        try
+        {
+           con = new DBConnection().getConnection();
+           if(IsResultWithHeldForStudent(StudentId, SubjectBranchId, ExamId))
+           {
+               st=con.prepareStatement("Update StudentSubjectMark set ExternalMark=?,InternalMark=?,IsValid=1,IsPassed=? where StudentSubjectMarkId=?");
+               st.setDouble(1,ExternalMark);
+               st.setInt(2, InternalMark);
+               st.setInt(3, Status);
+               st.setString(4, getStudentSubjectBranchId(StudentId, SubjectBranchId, ExamId));
+           }
+           else
+           {
+                st=con.prepareStatement("insert into StudentSubjectMark (StudentId,ExamId,SubjectBranchId,ExternalMark,InternalMark,Remarks,IsValid,IsPassed) values(?,?,?,?,?,?,1,?)");
+                st.setInt(1,StudentId);
+                st.setString(2, ExamId);
+                st.setString(3, SubjectBranchId);
+                st.setDouble(4,ExternalMark);
+                st.setInt(5, InternalMark);
+                st.setString(6, Remarks);
+                st.setInt(7, Status);
+           }
+            
+            st.execute();
+            return true;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public boolean SaveMarkEntryLog(int StudentId,String SubjectBranchId,String ExamId,int Edit,HttpServletRequest request) throws SQLException, UnknownHostException
+{
+    
+String IpAddress=request.getRemoteAddr();
+String StudentSubjectMarkId=getStudentSubjectBranchId(StudentId, SubjectBranchId, ExamId);
+String User=request.getSession().getAttribute("UserName").toString();
+Connection con=null;
+try
+{
+    con=new DBConnection().getConnection();
+    PreparedStatement st=con.prepareStatement("insert into MarkEntryLog (UserName,Privilege,IPAddress,StudentSubjectMarkId,EnteredDate,IsEdited) values(?,33,?,?,sysdate(),?)");
+    st.setString(1, User);
+    st.setString(2, IpAddress);
+    st.setString(3, StudentSubjectMarkId);
+    st.setInt(4, Edit);
+    st.execute();
+    return true;
+}
+catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public boolean UpdateMarkofStudent(int StudentId,String ExamId,String SubjectBranchId,double ExternalMark,Integer InternalMark,String Remarks,String StudentSubjectMarkId) throws SQLException
+{
+    Connection con=null;
+    PreparedStatement st=null;
+    int Status=IsStudentFailedForSubject(ExternalMark,Double.parseDouble(InternalMark.toString()),SubjectBranchId);
+        try
+        {
+           con = new DBConnection().getConnection();
+                st=con.prepareStatement("update StudentSubjectMark set StudentId=?,ExamId=?,SubjectBranchId=?,ExternalMark=?,InternalMark=?,Remarks=?,IsPassed=? where StudentSubjectMarkId=? ");
+                st.setInt(1,StudentId);
+                st.setString(2, ExamId);
+                st.setString(3, SubjectBranchId);
+                st.setDouble(4,ExternalMark);
+                st.setInt(5, InternalMark);
+                st.setString(6, Remarks);
+                st.setInt(7, Status);
+                st.setString(8, StudentSubjectMarkId);
+
+            st.execute();
+            return true;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public ArrayList<StudentSubjectMark> getMarksEnteredByUser(String UserName) throws SQLException
+{
+    ArrayList<StudentSubjectMark> StudentList=new ArrayList<StudentSubjectMark>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select distinct sp.StudentName,sp.PRN,s.SubjectName,sb.SubjectBranchId ,sm.ExternalMark,sm.InternalMark,sm.StudentSubjectMarkId from StudentPersonal sp,StudentSubjectMark sm,SubjectBranchMaster sb,SubjectMaster s,MarkEntryLog m where sp.StudentId=sm.StudentId and sm.SubjectBranchId=sb.SubjectBranchId and s.SubjectId=sb.SubjectId and sm.StudentSubjectMarkId=m.StudentSubjectMarkId and m.Privilege=33 and m.IsEdited=0 and m.UserName=? and sm.IsAssistantVerified=0 and IsValid=1 order by StudentSubjectMarkId desc");
+            st.setString(1, UserName);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                StudentSubjectMark student=new StudentSubjectMark();
+                student.PRN=rs.getString("PRN");
+                student.StudentName=rs.getString("StudentName");
+                student.SubjectBranchId=rs.getString("SubjectBranchId");
+                student.SubjectName=rs.getString("SubjectName");
+                student.ExternalMark=rs.getString("ExternalMark");
+                student.InternalMark=rs.getString("InternalMark");
+                student.StudentSubjectMarkId=rs.getString("StudentSubjectMarkId");
+
+                StudentList.add(student);
+            }
+            return StudentList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int TotalRecordsEnteredByUser(String UserName) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark m inner join MarkEntryLog l on m.StudentSubjectMarkId=l.StudentSubjectMarkId inner join MguClientLogin mc on mc.UserName=l.UserName and mc.EndDate is null and mc.Privilege=33 and mc.Username=? and m.IsAssistantVerified=0 and l.IsEdited=0 ");
+            st.setString(1, UserName);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int TotalRecordsVerifiedByUser(String User_Asst) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark m inner join MarkEntryLog l on m.StudentSubjectMarkId=l.StudentSubjectMarkId inner join MguClientLogin mc on mc.UserName=l.UserName and mc.EndDate is null and mc.Privilege=33 and mc.Username=? and m.IsAssistantVerified=1 and l.IsEdited=0 ");
+            st.setString(1, User_Asst);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int getTotalCountOfRecordsToBeVerifiedBySO(String UserName) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark m inner join MarkEntryLog l on m.StudentSubjectMarkId=l.StudentSubjectMarkId inner join AssistantSOMapping a on a.User_Asst=l.UserName and a.EndDate is null and l.Privilege=33 and a.User_SO=? and m.IsSOVerified=0 and IsAssistantVerified=1 and l.IsEdited=0");
+            st.setString(1, UserName);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public StudentSubjectMark getSelectedStudentMark(String StudentSubjectBranchId) throws SQLException
+{
+     Connection con=null;
+     StudentSubjectMark student=new StudentSubjectMark();
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select sp.StudentName,sp.PRN,sp.BranchId,s.SubjectName,sb.SubjectBranchId,sb.CurrentYearSem,sm.ExamId,sm.ExternalMark,sm.InternalMark,sm.StudentSubjectMarkId,sm.Remarks from StudentPersonal sp,StudentSubjectMark sm,SubjectBranchMaster sb,SubjectMaster s where sp.StudentId=sm.StudentId and sm.SubjectBranchId=sb.SubjectBranchId and s.SubjectId=sb.SubjectId and sm.IsAssistantVerified=0 and sm.StudentSubjectMarkId=? and IsValid=1");
+            st.setString(1, StudentSubjectBranchId);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+
+                student.PRN=rs.getString("PRN");
+                student.StudentName=rs.getString("StudentName");
+                student.SubjectBranchId=rs.getString("SubjectBranchId");
+                student.SubjectName=rs.getString("SubjectName");
+                student.ExternalMark=rs.getString("ExternalMark");
+                student.StudentSubjectMarkId=rs.getString("StudentSubjectMarkId");
+                student.Sem=rs.getInt("CurrentYearSem");
+                student.ExamId=rs.getString("ExamId");
+                student.InternalMark=rs.getString("InternalMark");
+                student.BranchId=rs.getString("BranchId");
+                student.Remarks=rs.getString("Remarks");
+           }
+            return student;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+
+}
+
+public boolean SendMarksForApproval(ArrayList<StudentSubjectMark> stuMark) throws SQLException
+{
+    Connection con=null;
+    try
+        {
+           con = new DBConnection().getConnection();
+           PreparedStatement st=con.prepareStatement("update StudentSubjectMark set IsAssistantVerified=1 where StudentSubjectMarkId=? ");
+           int size=stuMark.size(),i=0;
+           while(i<size)
+           {
+              StudentSubjectMark Sid=stuMark.get(i);
+              st.setString(1, Sid.StudentSubjectMarkId);
+              st.executeUpdate();
+              i++;
+           }
+           return true;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public ArrayList<StudentSubjectMark> getRecordsToBeVerifiedBySO(String Query,String UserName) throws SQLException
+{
+    ArrayList<StudentSubjectMark> StudentList=new ArrayList<StudentSubjectMark>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement(Query);
+            st.setString(1, UserName);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                StudentSubjectMark student=new StudentSubjectMark();
+                student.PRN=rs.getString("PRN");
+                student.StudentName=rs.getString("StudentName");
+                student.SubjectBranchId=rs.getString("SubjectBranchId");
+                student.SubjectName=rs.getString("SubjectName");
+                student.ExternalMark=rs.getString("ExternalMark");
+                student.InternalMark=rs.getString("InternalMark");
+                student.StudentSubjectMarkId=rs.getString("StudentSubjectMarkId");
+
+                StudentList.add(student);
+            }
+            return StudentList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public ArrayList<StudentSubjectMark> getRecordsApprovedBySO(String Query,String UserName) throws SQLException
+{
+    ArrayList<StudentSubjectMark> StudentList=new ArrayList<StudentSubjectMark>();
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement(Query);
+            st.setString(1, UserName);
+            ResultSet rs=st.executeQuery();
+            while(rs.next())
+            {
+                StudentSubjectMark student=new StudentSubjectMark();
+                student.PRN=rs.getString("PRN");
+                student.StudentName=rs.getString("StudentName");
+                student.SubjectBranchId=rs.getString("SubjectBranchId");
+                student.SubjectName=rs.getString("SubjectName");
+                student.ExternalMark=rs.getString("ExternalMark");
+                student.InternalMark=rs.getString("InternalMark");
+                student.StudentSubjectMarkId=rs.getString("StudentSubjectMarkId");
+
+                StudentList.add(student);
+            }
+            return StudentList;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean ApproveStudentsMark(ArrayList<StudentSubjectMark> stuMark) throws SQLException
+{
+    Connection con=null;
+    try
+        {
+           con = new DBConnection().getConnection();
+           PreparedStatement st=con.prepareStatement("update StudentSubjectMark set IsSOVerified=1 where StudentSubjectMarkId=? ");
+           int size=stuMark.size(),i=0;
+           while(i<size)
+           {
+              StudentSubjectMark Sid=stuMark.get(i);
+              st.setString(1, Sid.StudentSubjectMarkId);
+              st.executeUpdate();
+              i++;
+           }
+           return true;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public String getSubjectBranchIdfromStudentSubjectMarkId(String StudentSubjectMarkId) throws SQLException
+{
+        Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st = con.prepareStatement("select SubjectBranchId from StudentSubjectMark where StudentSubjectMarkId=?" );
+            st.setString(1, StudentSubjectMarkId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getString(1);
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean MarkUpdationBySO(double external,double internal,String StudentSubjectMarkId) throws SQLException
+{
+    Absentees abs=new Absentees();
+    Connection con=null;
+    int Status=IsStudentFailedForSubject(external,internal,getSubjectBranchIdfromStudentSubjectMarkId(StudentSubjectMarkId));
+    try
+        {
+           con = new DBConnection().getConnection();
+           PreparedStatement st=con.prepareStatement("update StudentSubjectMark set ExternalMark=?,InternalMark=?,IsPassed=? where StudentSubjectMarkId=? ");
+           st.setDouble(1, external);
+           st.setDouble(2, internal);
+           st.setInt(3, Status);
+           st.setString(4, StudentSubjectMarkId);
+           st.executeUpdate();
+           return true;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public boolean SaveMarkEditLogForSO(String StudentSubjectMarkId,String ExamId,HttpServletRequest request) throws SQLException
+{
+String IpAddress=request.getRemoteAddr();
+String User=request.getSession().getAttribute("UserName").toString();
+Connection con=null;
+try
+{
+    con=new DBConnection().getConnection();
+    PreparedStatement st=con.prepareStatement("insert into MarkEntryLog (UserName,Privilege,IPAddress,StudentSubjectMarkId,EnteredDate,IsEdited) values(?,32,?,?,sysdate(),1)");
+    st.setString(1, User);
+    st.setString(2, IpAddress);
+    st.setString(3, StudentSubjectMarkId);
+    st.execute();
+    return true;
+
+}
+catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public boolean SaveMarkApprovalLogForSO(ArrayList<StudentSubjectMark> stuMark,HttpServletRequest request) throws SQLException
+{
+String IpAddress=request.getRemoteAddr();
+String User=request.getSession().getAttribute("UserName").toString();
+Connection con=null;
+try
+{
+    con=new DBConnection().getConnection();
+    PreparedStatement st=con.prepareStatement("insert into MarkEntryLog (UserName,Privilege,IPAddress,StudentSubjectMarkId,EnteredDate,IsEdited) values(?,32,?,?,sysdate(),4)");
+     int size=stuMark.size(),i=0;
+           while(i<size)
+           {
+              StudentSubjectMark Sid=stuMark.get(i);
+              st.setString(1, User);
+              st.setString(2, IpAddress);
+              st.setString(3, Sid.StudentSubjectMarkId);
+              st.executeUpdate();
+              i++;
+           }
+    return true;
+
+}
+catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public long CalculateInternal(double ExternalMark,String SubjectBranchId) throws SQLException
+{
+    Connection con=null;
+    long Internal;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select InternalEvaluationValue from SubjectBranchMaster where SubjectBranchid=?");
+            st.setString(1, SubjectBranchId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                Internal=Math.round(ExternalMark*rs.getDouble("InternalEvaluationValue"));
+            }
+            else
+            {
+                Internal=0;
+            }
+            return Internal;
+
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsSubjectHasInternal(String SubjectBranchId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select hasInternal from SubjectBranchMaster where SubjectBranchId=? ");
+            st.setString(1, SubjectBranchId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)==0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsSubjectHasNoInternalCalculation(String SubjectBranchId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select hasNoInternalCalculation from SubjectBranchMaster where SubjectBranchId=? ");
+            st.setString(1, SubjectBranchId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getInt(1)==1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int IsStudentFailedForSubject(double External,double Internal,String SubjectBranchId) throws SQLException
+{
+    Connection con=null;
+    double Total=External+Internal;
+        try
+        {
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select ExternalMin,PassMark,InternalMin from SubjectBranchMaster where SubjectBranchId=?");
+            st.setString(1, SubjectBranchId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                if(rs.getDouble("ExternalMin")!=0)
+                {
+                    if(rs.getDouble("ExternalMin") > External)
+                    {
+                        return 0;
+                    }
+                    else if(rs.getDouble("InternalMin")!=0)
+                    {
+                        if(rs.getDouble("InternalMin")>Internal)
+                        {
+                            return 0;
+                        }
+                        else if(rs.getDouble("PassMark") > Total)
+                        {
+                            return 0;
+                        }
+                    }
+                }
+                else
+                {
+                    if(rs.getDouble("PassMark") > Total)
+                        {
+                            return 0;
+                        }
+                }
+                
+                
+                return 1;
+            }
+             return 1;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return 1;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public boolean IsMarkVerificationCompletedForBranch(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Absentees abs=new Absentees();
+    Connection con=null;
+    int TotalReg=getTotalCountOfRegistrationForCourse(BranchId,Sem,ExamId)-(getTotalCountOfAbsenteesForCourse(BranchId, Sem, ExamId)-getTotalAbsenteesEnteredWithoutFee(BranchId, Sem, ExamId));
+        try
+        {
+            if(BranchId.equals("-1"))
+            {
+                return false;
+            }
+            else
+            {
+                con=new DBConnection().getConnection();
+                PreparedStatement st=con.prepareStatement("select count(*) from StudentSubjectMark m inner join StudentPersonal s on m.StudentId=s.StudentId and s.Branchid=? where  m.ExamId=? and m.IsAssistantVerified=1 and m.IsSOVerified=1 ");
+                st.setString(1, BranchId);
+                st.setString(2, ExamId);
+                ResultSet rs=st.executeQuery();
+                if(rs.next())
+                {
+                    if(rs.getInt(1) == TotalReg)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return false;
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(UserCreation.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int getTotalCountOfRegistrationForCourse(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("Select count(e.StudentId) from ExamRegistrationMaster e inner join StudentPersonal s on s.StudentId=e.StudentId  inner join SubjectBranchMaster b on b.SubjectBranchId=e.SubjectBranchId and b.BranchId=? and CurrentYearSem=? where e.ExamId=? ");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalCountOfStudentsForCourse(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("Select count(distinct e.StudentId) from ExamRegistrationMaster e inner join StudentPersonal s on s.StudentId=e.StudentId  inner join SubjectBranchMaster b on b.SubjectBranchId=e.SubjectBranchId and b.BranchId=? and CurrentYearSem=? where e.ExamId=? ");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalPassForCourse(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM StudentPassDetails p inner join StudentPersonal s on  s.StudentId=p.StudentId and s.BranchId=? where p.YearOrSem=? and p.ExamId=?");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalCountOfAbsenteesForCourse(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT sum(Count) FROM `DEMS_db`.`ExamAbsenteeMalPracticeCount` c inner join SubjectBranchMaster b on  b.SubjectBranchId=c.SubjectBranchId and b.BranchId=? and b.CurrentYearSem=? where c.ExamId=? and c.IsAbsentOrMal=1");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalAbsenteesEnteredWithoutFee(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM `DEMS_db`.`StudentSubjectMark` c inner join SubjectBranchMaster b on  b.SubjectBranchId=c.SubjectBranchId and b.BranchId=? and b.CurrentYearSem=? where c.ExamId=? and IsAbsent=1 and StudentId not in (select StudentId from StudentFeeMap where ExamFeeId>0)");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getTotalAbsenteesEnteredForSubjectWithoutFee(String SubjectBranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM `DEMS_db`.`StudentSubjectMark` c inner join SubjectBranchMaster b on  b.SubjectBranchId=c.SubjectBranchId and c.SubjectBranchId=? and b.CurrentYearSem=? where c.ExamId=? and IsAbsent=1 and not exists (select StudentId from StudentFeeMap f where f.StudentId=c.StudentId and ExamFeeId>0");
+            st.setString(1,SubjectBranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public ArrayList<ResultStatistics> getStatisticsForCourse(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+    ArrayList<ResultStatistics> Stat=new ArrayList<ResultStatistics>();
+    Absentees abs=new Absentees();
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT sb.SubjectBranchId,s.SubjectCode,s.SubjectName,count(distinct StudentId) as Pass from SubjectBranchMaster sb inner join SubjectMaster s on s.SubjectId=sb.SubjectId inner join StudentSubjectMark m on sb.SubjectBranchId=m.SubjectBranchId and IsPassed=1 and IsSOVerified=1 where sb.BranchId=? and sb.CurrentYearSem=? group by sb.SubjectBranchId");
+            st.setString(1, BranchId);
+            st.setInt(2, Sem);
+            ResultSet Subject=st.executeQuery();
+            while(Subject.next())
+            {
+                ResultStatistics Result=new ResultStatistics();
+                Result.SubjectBranchId=Subject.getString("SubjectBranchId");
+                Result.SubjectCode=Subject.getString("SubjectCode");
+                Result.SubjectName=Subject.getString("SubjectName");
+                Result.TotalPass=Subject.getInt("Pass");
+                int TotalReg=abs.getTotalCountOfStudentsForSubject(Subject.getString("SubjectBranchId"), ExamId)-abs.getTotalCountOfAbsenteeForSubject(Subject.getString("SubjectBranchId"), ExamId);
+                Result.TotalReg=TotalReg;
+                Result.PassPercentage=Math.round((Subject.getDouble("Pass")/TotalReg)*100);
+                Stat.add(Result);
+
+                int SemTotal=getSemesterTotalForCourse(BranchId,Sem);
+
+                st=con.prepareStatement("select count(studentId) from StudentSubjectMark where sum(ExternalMark+InternalMark)>=?");
+            }
+            return Stat;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getCountofStudentsAboveEightyPercentage(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM StudentPassDetails p inner join StudentPersonal s on  s.StudentId=p.StudentId and s.BranchId=? where p.YearOrSem=? and p.ExamId=? and p.TotalMark>?");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            st.setDouble(4, getSemesterTotalForCourse(BranchId, Sem)*0.8);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getCountofStudentsAboveSeventyFivePercentage(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM StudentPassDetails p inner join StudentPersonal s on  s.StudentId=p.StudentId and s.BranchId=? where p.YearOrSem=? and p.ExamId=? and p.TotalMark>?");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            st.setDouble(4, getSemesterTotalForCourse(BranchId, Sem)*0.75);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getCountofStudentsAboveSixtyPercentage(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM StudentPassDetails p inner join StudentPersonal s on  s.StudentId=p.StudentId and s.BranchId=? where p.YearOrSem=? and p.ExamId=? and p.TotalMark>?");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            st.setDouble(4, getSemesterTotalForCourse(BranchId, Sem)*0.6);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getCountofStudentsAboveFiftyPercentage(String BranchId,int Sem,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM StudentPassDetails p inner join StudentPersonal s on  s.StudentId=p.StudentId and s.BranchId=? where p.YearOrSem=? and p.ExamId=? and p.TotalMark>?");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            st.setString(3, ExamId);
+            st.setDouble(4, getSemesterTotalForCourse(BranchId, Sem)*0.5);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public int getSemesterTotalForCourse(String BranchId,int Sem) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT sum(TotalMark) FROM SubjectBranchMaster where BranchId=? and CurrentYearSem=?");
+            st.setString(1,BranchId);
+            st.setInt(2, Sem);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public ArrayList<StatisticsWithModeration> getStatisticsForBranchWithModeration(int From,int To, String BranchId,int Sem,String ExamId) throws SQLException
+{
+    ArrayList<StatisticsWithModeration> Statistics=new ArrayList<StatisticsWithModeration>();
+    Connection con=null;int i=From;
+    int Count=0,Reg=getTotalCountOfStudentsForCourse(BranchId, Sem, ExamId);
+    try
+    {
+        while(i<=To)
+        {
+            String Query="select distinct StudentId,sum((ExternalMark+InternalMark)-b.PassMark) as Mark from StudentSubjectMark m inner join SubjectBranchMaster b on b.SubjectBranchId=m.SubjectBranchId and b.BranchId=? and b.CurrentYearSem=? where m.ExamId=? and m.IsPassed=0 and StudentId not in (select StudentId from StudentPassDetails) and StudentId not in(select StudentId from StudentSubjectMark where IsAbsent=1) group by StudentId ";
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement(Query);
+            st.setString(1, BranchId);
+            st.setInt(2,Sem);
+            st.setString(3, ExamId);
+            ResultSet Rs=st.executeQuery();
+            StatisticsWithModeration stat=new StatisticsWithModeration();
+            int Pass=getTotalPassForCourse(BranchId, Sem, ExamId);
+            while(Rs.next())
+            {
+                if(Rs.getInt("Mark")+i>=0)
+                {
+                    Pass++;
+                }
+                stat.AppliedModeration=i;
+                stat.TotalPass=Pass;
+                stat.PassPercentage=(stat.TotalPass*100)/Reg;
+                stat.TotalFail=Reg-stat.TotalPass;
+            }
+            Statistics.add(stat);
+            i++;
+        }
+        return Statistics; 
+    }
+    catch (SQLException ex)
+    {
+        Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+        return null;
+    }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public ArrayList<StatisticsWithModeration> getStatisticsForSubjectPassWithModeration(int From,int To, String BranchId,int Sem,String ExamId, String SubjectBranchId) throws SQLException
+{
+    ArrayList<StatisticsWithModeration> Statistics=new ArrayList<StatisticsWithModeration>();
+    Connection con=null;int i=From;
+    Absentees abs=new Absentees();
+    boolean flag=false;
+    int Count=0,Reg=getTotalCountOfStudentsForCourse(BranchId, Sem, ExamId);
+    try
+    {
+        while(i<=To)
+        {
+            String Query="select distinct StudentId,sum((ExternalMark+InternalMark)-b.PassMark) as Mark from StudentSubjectMark m inner join SubjectBranchMaster b on b.SubjectBranchId=m.SubjectBranchId and b.BranchId=? and b.CurrentYearSem=? and b.SubjectBranchId=? where m.ExamId=? and m.IsPassed=0 and StudentId not in (select StudentId from StudentPassDetails) and StudentId not in(select StudentId from StudentSubjectMark where IsAbsent=1) group by StudentId ";
+            con=new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement(Query);
+            st.setString(1, BranchId);
+            st.setInt(2,Sem);
+            st.setString(3, SubjectBranchId);
+            st.setString(4, ExamId);
+            ResultSet Rs=st.executeQuery();
+            StatisticsWithModeration stat=new StatisticsWithModeration();
+            int Pass=getTotalPassForCourse(BranchId, Sem, ExamId);
+            int SubjectPass=TotalPassForSubject(SubjectBranchId, ExamId);
+            while(Rs.next())
+            {
+                flag=true;
+                if(Rs.getInt("Mark")+i>=0)
+                {
+                    Pass++;
+                    SubjectPass++;
+                }
+                stat.AppliedModeration=i;
+                stat.TotalPass=Pass;
+                stat.PassPercentage=(stat.TotalPass*100)/Reg;
+                stat.TotalFail=Reg-stat.TotalPass;
+                stat.SubjectBranchId=SubjectBranchId;
+                
+                stat.TotalSubjectPass=SubjectPass;
+            }
+            if(flag==true)
+            Statistics.add(stat);
+            i++;
+        }
+        return Statistics;
+    }
+    catch (SQLException ex)
+    {
+        Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+        return null;
+    }
+    finally
+    {
+        if(con!=null)
+        {
+            con.close();
+        }
+    }
+}
+
+public int TotalPassForSubject(String SubjectBranchId,String ExamId) throws SQLException
+{
+    Connection con=null;
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("SELECT count(*) FROM StudentSubjectMark where SubjectBranchId=? and ExamId=? and IsPassed=1");
+            st.setString(1,SubjectBranchId);
+            st.setString(2, ExamId);
+            ResultSet rs=st.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+
+public String getStudentSubjectMarkIdsEnteredByUser(String Assistant) throws SQLException
+{
+    Connection con=null;
+    String MarkId=" ";
+        try
+        {
+            con = new DBConnection().getConnection();
+            PreparedStatement st=con.prepareStatement("select StudentSubjectMarkId from MarkEntryLog where IsEdited=0 and UserName=?");
+            st.setString(1, Assistant);
+            ResultSet rs=st.executeQuery();
+            
+            while(rs.next())
+            {
+                MarkId+=rs.getString("StudentSubjectMarkId")+",";
+            }
+String Mark=MarkId.substring(0,MarkId.length()-1);
+            return Mark;
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(Absentees.class.getName()).log(Level.SEVERE, null, ex);
+            return " ";
+        }
+        finally
+        {
+            if(con!=null)
+            {
+                con.close();
+            }
+        }
+}
+}

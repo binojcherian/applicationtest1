@@ -1,0 +1,21 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Entity;
+
+/**
+ *
+ * @author user
+ */
+public class Subject
+{
+    public String SubjectId,SubjectCode,SubjectName,SubjectBranchId,YearSem,BranchId,MaxMark,MinMark;
+    public int semOryear,AcademicYear;
+
+    // Modified by Yadu
+
+    public String SubBranchId,StartingSem,DisplaySubBranchName,AcdYear;
+
+}

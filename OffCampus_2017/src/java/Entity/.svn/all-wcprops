@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/OffCampus/!svn/ver/40/src/java/Entity
+END
+AbsenteeCount.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/OffCampus/!svn/ver/1/src/java/Entity/AbsenteeCount.java
+END
+Subject.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/40/src/java/Entity/Subject.java
+END
+UserWiseCount.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/OffCampus/!svn/ver/1/src/java/Entity/UserWiseCount.java
+END
+StudentData.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/OffCampus/!svn/ver/1/src/java/Entity/StudentData.java
+END
+StudentSubjectMark.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/OffCampus/!svn/ver/1/src/java/Entity/StudentSubjectMark.java
+END
+ExamData.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/1/src/java/Entity/ExamData.java
+END
+StudentSubject.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/OffCampus/!svn/ver/1/src/java/Entity/StudentSubject.java
+END
+StatisticsWithModeration.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/OffCampus/!svn/ver/14/src/java/Entity/StatisticsWithModeration.java
+END
+ResultStatistics.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/OffCampus/!svn/ver/1/src/java/Entity/ResultStatistics.java
+END
+CourseData.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/OffCampus/!svn/ver/1/src/java/Entity/CourseData.java
+END
+User.java
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/OffCampus/!svn/ver/1/src/java/Entity/User.java
+END

@@ -1,0 +1,459 @@
+<%-- 
+    Document   : SubjectWisePRN
+    Created on : Feb 15, 2012, 12:21:12 PM
+    Author     : user
+--%>
+<%@page contentType="text/html" pageEncoding="UTF-8" errorPage="ErrorPage.jsp" import="Controller.*,java.util.ArrayList,Entity.*,model.*,java.sql.*" %>
+
+<%
+   if(request.getSession().getAttribute("UserName")==null)
+{
+response.sendRedirect(response.encodeRedirectURL("/OffCampus/LoginPage.jsp?message=Session Time Out.Login again"));
+}else{
+    String SubjectBranchId=null;
+    if(request.getParameter("SubjectBranchId")!=null && (!request.getParameter("SubjectBranchId").isEmpty()))
+        {
+            SubjectBranchId=request.getParameter("SubjectBranchId");
+            request.getSession().setAttribute("Subject", SubjectBranchId);
+        }
+    else if(request.getSession().getAttribute("Subject")==null)
+        {
+        response.sendRedirect("MarkEntryForPRN.jsp");
+        }
+    model.SubjectWisePRN Subject=new model.SubjectWisePRN();
+    model.Absentees abs=new Absentees();
+    %>
+
+<html><head>
+
+		<title>DEMS</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-2">
+                <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+                <script type="text/javascript" src="./js/Absentee.js"></script>
+		<style type="text/css">
+<!--
+body {
+        background-image:  url();
+        margin-left: 0px;
+        margin-top: 0px;
+        margin-right: 0px;
+        margin-bottom: 0px;
+        background-color: #FFFFFF;
+}
+-->
+        </style>
+<link rel="Stylesheet" href="Style/style.css" type="text/css">
+
+
+
+	    <style type="text/css">
+<!--
+.style1 {color: #0099CC}
+-->
+        </style>
+	    </head>
+           
+            <body>
+	<!-- rpm find linux search -->
+<table width="90%" align="center" border="0" cellpadding="0" cellspacing="0">
+<tbody>
+<jsp:include page="Header_Assistant.jsp"/>
+<tr><td>
+<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+  <tbody><tr valign="top" align="left">
+          <td width="200" >
+
+       </td>
+    <td width="20" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="20"></td>
+    <td width="90%">
+      <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0">
+      <tbody><tr>
+        <td colspan="5" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="10" width="609"></td>
+      </tr>
+      <tr>
+        <td width="16" bgcolor="#ffffff"><img src="images/spacer.gif" alt="" height="18" width="8"></td>
+	<td>
+        <div class="textblack"></div>	</td>
+        <td bgcolor="#ffffff">&nbsp;
+         <%-- Content --%>
+            <center>
+                <form id="SubjectWisePRN" name="SubjectWisePRN" action="SubjectWisePRN.jsp" method="post">
+                    <input type="hidden" name="SubjectBranchId" name="SubjectBranchId" value="<%=request.getSession().getAttribute("Subject") %>"
+                           <center>
+                            <table  border="1" width="90%" style="border-style: groove" cellspacing="0" cellpadding="3">
+                                <tr  align="center">
+                                    <td height="20px" bgcolor="#d9bf79" colspan="4"> <b> <font color="#a02a28"> <%=abs.getSubjectNameFromSubjectBranchId(request.getSession().getAttribute("Subject").toString()) %></font> <a  href="MarkEntryForPRN.jsp?AV=1&Subject=<%=request.getSession().getAttribute("Subject").toString()  %>">[ Back ]</a></b></td>
+                                </tr>
+                                <tr>
+                                    
+                                </tr>
+                                <tr align="center">
+
+                                    <td align="center" valign="top" colspan="2">
+                                        <div align="center"> <b><h5><u>Records Pending</u></h5></b></div><br>
+                                        <%!
+                        public int nullIntconv(String str) {
+                            int conv = 0;
+                            if (str == null) {
+                                str = "0";
+                            } else if ((str.trim()).equals("null")) {
+                                str = "0";
+                            } else if (str.equals("")) {
+                                str = "0";
+                            }
+                            try {
+                                conv = Integer.parseInt(str);
+                            } catch (Exception e) {
+                            }
+                            return conv;
+                        }
+                    %>
+                    <%
+                                Connection con = new DBConnection().getConnection();
+                                String message=null;
+                                ResultSet rsPagination = null;
+                                ResultSet rsRowCnt = null;
+
+                                PreparedStatement psPagination = null;
+                                PreparedStatement psRowCnt = null;
+
+                                int iShowRows = 30;  // Number of records show on per page
+                                int iTotalSearchRecords = 20;  // Number of pages index shown
+
+                                int iTotalRows = nullIntconv(request.getParameter("iTotalRows"));
+                                int iTotalPages = nullIntconv(request.getParameter("iTotalPages"));
+                                int iPageNo = nullIntconv(request.getParameter("iPageNo"));
+                                int cPageNo = nullIntconv(request.getParameter("cPageNo"));
+
+                                int iStartResultNo = 0;
+                                int iEndResultNo = 0;
+
+                                
+                                if(iPageNo!=0)
+                                iPageNo = Math.abs((iPageNo - 1) * iShowRows);
+                                try
+                                {
+                                    String sqlPagination = Subject.getQuery() +" where not exists(select StudentId from StudentSubjectMark where StudentId=e.StudentId and SubjectBranchId=? and IsValid=1)  order by PRN limit " + iPageNo + "," + iShowRows + "";//limiting no of records
+
+                                    psPagination = con.prepareStatement(sqlPagination);
+                                    psPagination.setString(1, request.getSession().getAttribute("Subject").toString());
+                                    psPagination.setString(2, request.getSession().getAttribute("Subject").toString());
+                                    rsPagination = psPagination.executeQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    out.print(ex);
+
+                                }
+                                Boolean notFound = false;
+                                if (!rsPagination.next())
+                                {
+                                    notFound = true;
+                                    message = " No Records Pending";
+                                }
+                                //// this will count total number of rows
+                                String sqlRowCnt = "SELECT FOUND_ROWS() as cnt";
+
+                                psRowCnt = con.prepareStatement(sqlRowCnt);
+                                rsRowCnt = psRowCnt.executeQuery();
+
+                                if (rsRowCnt.next())
+                                {
+                                    iTotalRows = rsRowCnt.getInt("cnt");
+                                }
+                    %>
+                    <input type="hidden" name="iPageNo" value="<%=iPageNo%>"/>
+                    <input type="hidden" name="cPageNo" value="<%=cPageNo%>"/>
+                    <input type="hidden" name="iShowRows" value="<%=iShowRows%>"/>
+<% if (message != null) {%>
+                        <center>
+                        <table><tr>
+                            <td></td>
+                            <td colspan="2">  <span  class="Error" style="color:red">*<%=message%>  </span></td>
+                            </tr><br/></table> </center>
+                        <%}else{%>
+                        <center>
+                            <br>
+                           
+                            <div align="center" class="textred"> <b><font class="textred">Total Pending Records : <%=iTotalRows%></font></b></div>
+                             <table border="1" width="100%" style="border-style: groove" cellspacing="0" cellpadding="3" class="textblack">
+
+                             <tr class="textblack" bgcolor="#ded4b8" align="center">
+                         <th>Sl No</th>
+                         <th>PRN</th>
+                         <th>StudentName</th>
+                         
+                    </tr>
+                            <%
+
+                                        //CenterVerification verification = new CenterVerification();
+
+                                        int j = 0;
+                                        j = j + iPageNo;
+                                        if (!notFound) {
+                                            do {
+
+                                                j++;
+
+
+                            %>
+
+
+                           <tr>
+                        <td class="textblack" align="left"><%=j%></td>
+                        <td class="textblack" align="left"><%=rsPagination.getString("PRN") %></td>
+                        <td class="textblack" align="left" ><%=rsPagination.getString("StudentName")  %></td>
+                    </tr>
+                            <%  } while (rsPagination.next());
+                                                                                            }%>
+
+                            <%
+                                        //// calculate next record start record  and end record
+                                        try {
+                                            if (iTotalRows < (iPageNo + iShowRows)) {
+                                                iEndResultNo = iTotalRows;
+                                            } else {
+                                                iEndResultNo = (iPageNo + iShowRows);
+                                            }
+
+                                            iStartResultNo = (iPageNo + 1);
+                                            iTotalPages = ((int) (Math.ceil((double) iTotalRows / iShowRows)));
+
+             ;                           } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                            %>
+                            <br/>
+                            <tr>
+                                <td colspan="8"  align="right">
+                                    <div>
+                                        <%
+                                                    //// index of pages
+
+                                                   int i = 0;
+                                                    int cPage = 0;
+                                                    if (iTotalRows != 0) {
+                                                        cPage = ((int) (Math.ceil((double) iEndResultNo / (iTotalSearchRecords * iShowRows))));
+
+                                                        int prePageNo = (cPage * iTotalSearchRecords) - ((iTotalSearchRecords - 1) + iTotalSearchRecords);
+                                                        if ((cPage * iTotalSearchRecords) - (iTotalSearchRecords) > 0) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo=<%=prePageNo%>&cPageNo=<%=prePageNo%>"> << Previous</a>
+                                        <%
+                                                                                                                                                    }
+
+                                                                                                                                                    for (i = ((cPage * iTotalSearchRecords) - (iTotalSearchRecords - 1)); i <= (cPage * iTotalSearchRecords); i++) {
+                                                                                                                                                        if (i == ((iPageNo / iShowRows) + 1)) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo=<%=i%>" style="cursor:pointer;color: #a02a28"><b><%=i%></b></a>
+                                        <%
+                                                                                                                                                                                                                                                    } else if (i <= iTotalPages) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo=<%=i%>" style="cursor:pointer;color: blue"><%=i%></a>
+                                        <%
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                    if (iTotalPages > iTotalSearchRecords && i < iTotalPages) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo=<%=i%>&cPageNo=<%=i%>"> >> Next</a>
+                                        <%
+                                                        }
+                                                    }
+                                        %>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table></center><%}%>
+
+
+                                        
+                                    </td>
+                                    <td valign="top" colspan="2">
+                                         <div align="center" ><h5><u>Mark/Absentees Entered</u></h5></div><br>
+                                         <%!
+
+                    %>
+                    <%
+
+                                String message1=null;
+                                ResultSet rsPagination1 = null;
+                                ResultSet rsRowCnt1 = null;
+
+                                PreparedStatement psPagination1 = null;
+                                PreparedStatement psRowCnt1 = null;
+
+                                int iShowRows1 = 30;  // Number of records show on per page
+                                int iTotalSearchRecords1 = 20;  // Number of pages index shown
+
+                                int iTotalRows1 = nullIntconv(request.getParameter("iTotalRows1"));
+                                int iTotalPages1 = nullIntconv(request.getParameter("iTotalPages1"));
+                                int iPageNo1 = nullIntconv(request.getParameter("iPageNo1"));
+                                int cPageNo1 = nullIntconv(request.getParameter("cPageNo1"));
+
+                                int iStartResultNo1 = 0;
+                                int iEndResultNo1 = 0;
+
+
+                                if(iPageNo1!=0)
+                                iPageNo1 = Math.abs((iPageNo1 - 1) * iShowRows1);
+                                try
+                                {
+                                    String sqlPagination1 = Subject.getQuery() +" where exists(select StudentId from StudentSubjectMark where StudentId=e.StudentId and SubjectBranchId=? and IsValid=1)  order by PRN limit " + iPageNo1 + "," + iShowRows1 + "";//limiting no of records
+
+                                    psPagination1 = con.prepareStatement(sqlPagination1);
+                                    psPagination1.setString(1, request.getSession().getAttribute("Subject").toString());
+                                    psPagination1.setString(2, request.getSession().getAttribute("Subject").toString());
+                                    rsPagination1 = psPagination1.executeQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    out.print(ex);
+                                }
+                                Boolean notFound1 = false;
+                                if (!rsPagination1.next())
+                                {
+                                    notFound1 = true;
+                                    message1 = " No Records Entered";
+                                }
+                                //// this will count total number of rows
+                                String sqlRowCnt1 = "SELECT FOUND_ROWS() as cnt";
+
+                                psRowCnt1 = con.prepareStatement(sqlRowCnt1);
+                                rsRowCnt1 = psRowCnt1.executeQuery();
+
+                                if (rsRowCnt1.next())
+                                {
+                                    iTotalRows1 = rsRowCnt1.getInt("cnt");
+                                }
+                    %>
+                    <input type="hidden" name="iPageNo1" value="<%=iPageNo1%>"/>
+                    <input type="hidden" name="cPageNo1" value="<%=cPageNo1%>"/>
+                    <input type="hidden" name="iShowRows1" value="<%=iShowRows1%>"/>
+<% if (message1 != null) {%>
+                        <center>
+                        <table><tr>
+                            <td></td>
+                            <td colspan="">  <span  class="Error" style="color:red">*<%=message1%>  </span></td>
+                            </tr><br/></table> </center>
+                        <%}else{%>
+                        <center>
+                            <br>
+                           
+                            <div align="center" class="textred"> <b><font class="textred">Total number of Records : <%=iTotalRows1%></font></b></div>
+                             <table border="1" width="100%" style="border-style: groove" cellspacing="0" cellpadding="3" class="textblack">
+
+                             <tr class="textblack" bgcolor="#ded4b8" align="center">
+                         <th >Sl No</th>
+                         <th>PRN</th>
+                         <th>StudentName</th>
+
+                    </tr>
+                            <%
+
+                                        //CenterVerification verification = new CenterVerification();
+
+                                        int k = 0;
+                                        k = k + iPageNo1;
+                                        if (!notFound1) {
+                                            do {
+
+                                                k++;
+
+
+                            %>
+
+
+                           <tr>
+                        <td class="textblack" align="left"><%=k%></td>
+                        <td class="textblack" align="left"><%=rsPagination1.getString("PRN") %></td>
+                        <td class="textblack" align="left" ><%=rsPagination1.getString("StudentName")  %></td>
+                    </tr>
+                            <%  } while (rsPagination1.next());
+                                                                                            }%>
+
+
+
+
+                            <%
+                                        //// calculate next record start record  and end record
+                                        try {
+                                            if (iTotalRows1 < (iPageNo1 + iShowRows1)) {
+                                                iEndResultNo1 = iTotalRows1;
+                                            } else {
+                                                iEndResultNo1 = (iPageNo1 + iShowRows1);
+                                            }
+
+                                            iStartResultNo1 = (iPageNo1 + 1);
+                                            iTotalPages1 = ((int) (Math.ceil((double) iTotalRows1 / iShowRows1)));
+
+             ;                           } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                            %>
+                            <br/>
+                            <tr>
+                                <td colspan="8"  align="right">
+                                    <div>
+                                        <%
+                                                    //// index of pages
+
+                                                   int l = 0;
+                                                    int cPage1 = 0;
+                                                    if (iTotalRows1 != 0) {
+                                                        cPage1 = ((int) (Math.ceil((double) iEndResultNo1 / (iTotalSearchRecords1 * iShowRows1))));
+
+                                                        int prePageNo1 = (cPage1 * iTotalSearchRecords1) - ((iTotalSearchRecords1 - 1) + iTotalSearchRecords1);
+                                                        if ((cPage1 * iTotalSearchRecords1) - (iTotalSearchRecords1) > 0) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo1=<%=prePageNo1%>&cPageNo1=<%=prePageNo1%>"> << Previous</a>
+                                        <%
+                                                                                                                                                    }
+
+                                                                                                                                                    for (l = ((cPage1 * iTotalSearchRecords1) - (iTotalSearchRecords1 - 1)); l <= (cPage1 * iTotalSearchRecords1); l++) {
+                                                                                                                                                        if (l == ((iPageNo1 / iShowRows1) + 1)) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo1=<%=l%>" style="cursor:pointer;color: #a02a28"><b><%=l%></b></a>
+                                        <%
+                                                                                                                                                                                                                                                    } else if (l <= iTotalPages1) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo1=<%=l%>" style="cursor:pointer;color: blue"><%=l%></a>
+                                        <%
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                    if (iTotalPages1 > iTotalSearchRecords1 && l < iTotalPages1) {
+                                        %>
+                                        <a href="SubjectWisePRN.jsp?iPageNo1=<%=l%>&cPageNo1=<%=l%>"> >> Next</a>
+                                        <%
+                                                        }
+                                                    }
+                                        %>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table></center><%} if(!con.isClosed()){ con.close();} %>
+
+
+
+                                    </td>
+                                </tr>
+                            </table></center>
+                </form>
+            </center>
+         <%-- Content --%>
+        </td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+  <TR> <TD><br/></TD></TR>
+</tbody></table>
+</td></tr>
+</tbody></table>
+</body></html>
+<jsp:include page="footer.jsp"/><% }%>
+

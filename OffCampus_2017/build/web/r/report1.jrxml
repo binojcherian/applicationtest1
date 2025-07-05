@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT b.DisplayName,s.SubjectCode,s.Subjectname,
+sb.CurrentYearSem,sb.PaperNo, sb.IsElective,sb.IsOptionalSubject,sb.IsAddedWithTotal,
+sb.ExternalMax,sb.ExternalMin,sb.InternalMax,sb.InternalMin FROM SubjectBranchMaster sb,
+SubjectMaster s,BranchMaster b where b.BranchId=sb.BranchId
+and s.SubjectId=sb.SubjectId and b.BranchId!=21 and b.BranchId!=20 order by b.DisplayName,sb.CurrentYearSem,s.SubjectCode,sb.PaperNo
+
+]]>
+	</queryString>
+	<field name="DisplayName" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SubjectCode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Subjectname" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="CurrentYearSem" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PaperNo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsElective" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsOptionalSubject" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="IsAddedWithTotal" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ExternalMax" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ExternalMin" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="InternalMax" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="InternalMin" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="Course">
+		<groupExpression><![CDATA[$F{DisplayName}]]></groupExpression>
+		<groupHeader>
+			<band height="50">
+				<textField>
+					<reportElement x="0" y="18" width="331" height="20"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{DisplayName}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="48" y="0" width="71" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{SubjectCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="119" y="3" width="179" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{Subjectname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="298" y="3" width="24" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{CurrentYearSem}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="48" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PaperNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="322" y="3" width="20" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{IsElective}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="342" y="3" width="25" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{IsOptionalSubject}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="367" y="3" width="27" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{IsAddedWithTotal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="394" y="3" width="30" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{ExternalMax}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="3" width="27" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{ExternalMin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="451" y="3" width="23" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{InternalMax}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="474" y="3" width="26" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{InternalMin}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

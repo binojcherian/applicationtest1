@@ -1,0 +1,60 @@
+/* 
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+function ChangeAssistants()
+{
+    //alert("dsgsdfg");
+ var Ajax=createXMLHttpRequest();
+   var SO=document.AssistantToSOMapping.SO.value;
+         Ajax.open("POST","/OffCampus/ViewAssistantsofSO.jsp?SO="+ SO);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+
+              document.getElementById("UserList").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+function ChangeUsers()
+{
+    //alert("dsgsdfg");
+ var Ajax=createXMLHttpRequest();
+   var SO=document.UserCourseMapping.SO.value;
+         Ajax.open("POST","/OffCampus/ViewCourseofUsers.jsp?SO="+ SO);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+
+              document.getElementById("UserList").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+
+function createXMLHttpRequest(){
+  // See http://en.wikipedia.org/wiki/XMLHttpRequest
+  // Provide the XMLHttpRequest class for IE 5.x-6.x:
+  if( typeof XMLHttpRequest == "undefined" ) XMLHttpRequest = function() {
+    try {return new ActiveXObject("Msxml2.XMLHTTP.6.0")} catch(e) {}
+    try {return new ActiveXObject("Msxml2.XMLHTTP.3.0")} catch(e) {}
+    try {return new ActiveXObject("Msxml2.XMLHTTP")} catch(e) {}
+    try {return new ActiveXObject("Microsoft.XMLHTTP")} catch(e) {}
+    throw new Error( "This browser does not support XMLHttpRequest." )
+  };
+  return new XMLHttpRequest();
+}
+
+function ResetAllFields()
+{
+    document.UserCreation.UserName.value="";
+    document.UserCreation.Password.value="";
+    document.UserCreation.CPassword.value="";
+    document.UserCreation.Name.value="";
+    document.UserCreation.Category.value=-1;
+    return false;
+}
+

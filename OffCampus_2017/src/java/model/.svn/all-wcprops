@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/OffCampus/!svn/ver/57/src/java/model
+END
+StudentSemesterTotal.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/OffCampus/!svn/ver/1/src/java/model/StudentSemesterTotal.java
+END
+Subjects.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/OffCampus/!svn/ver/30/src/java/model/Subjects.java
+END
+UserCreation.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/OffCampus/!svn/ver/31/src/java/model/UserCreation.java
+END
+DBConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/OffCampus/!svn/ver/1/src/java/model/DBConnection.java
+END
+SubjectWisePRN.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/OffCampus/!svn/ver/39/src/java/model/SubjectWisePRN.java
+END
+login.java
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/OffCampus/!svn/ver/65/src/java/model/login.java
+END
+Absentees.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/OffCampus/!svn/ver/68/src/java/model/Absentees.java
+END
+FalseNumberAssistantMapping.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/OffCampus/!svn/ver/1/src/java/model/FalseNumberAssistantMapping.java
+END
+StudentSubjects.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/OffCampus/!svn/ver/48/src/java/model/StudentSubjects.java
+END
+MarkEntry.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/OffCampus/!svn/ver/67/src/java/model/MarkEntry.java
+END

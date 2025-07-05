@@ -1,0 +1,591 @@
+/* 
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+function ChangeYearOrSem()
+{
+    //alert("dsgsdfg");
+ var Ajax=createXMLHttpRequest();
+   var Course=document.getElementById("Course").value;
+         Ajax.open("POST","/OffCampus/YearOrSemester.jsp?Course="+ Course);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+
+              document.getElementById("YearOrSem").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function ChangeYearOrSemForMarkEntry()
+{
+    //alert("dsgsdfg");
+ var Ajax=createXMLHttpRequest();
+   var Course=document.getElementById("Course").value;
+         Ajax.open("POST","/OffCampus/YearOrSemester.jsp?Course="+ Course);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+
+              document.getElementById("YearOrSem").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function CalculateInternalForVerification(i)
+{
+    var Subject;var Mark;
+    var Ajax=createXMLHttpRequest();
+    if(document.MarkVerificationSO.external.length>1)
+        {
+            Subject=document.MarkVerificationSO.SubjectBranchId[i].value;
+            Mark=document.MarkVerificationSO.external[i].value;
+        }
+        else
+            {
+                Subject=document.MarkVerificationSO.SubjectBranchId.value;
+                Mark=document.MarkVerificationSO.external.value;
+            }
+     Ajax.open("POST","/OffCampus/InternalCalculation.jsp?Mark="+ Mark+"&Subject="+ Subject);
+    Ajax.onreadystatechange = function()
+    {
+        if (Ajax.readyState == 4)
+        {
+            var internalMark=Ajax.responseText.trim();
+            //alert(internalMark);
+            if(internalMark==-1)
+                {
+                    if(document.MarkVerificationSO.external.length>1)
+                        {
+                            document.MarkVerificationSO.internal[i].readOnly=false;
+                            document.MarkVerificationSO.internal[i].value="";
+                        }
+                   else
+                       {
+                           document.MarkVerificationSO.internal.readOnly=false;
+                           document.MarkVerificationSO.internal.value="";
+                       }
+                    
+                }
+               else if(internalMark==-2)
+                    {
+                        if(document.MarkVerificationSO.external.length>1)
+                            {
+                                 document.MarkVerificationSO.internal[i].readOnly=true;
+                                document.MarkVerificationSO.internal[i].value=0;
+                            }
+                            else
+                                {
+                                   document.MarkVerificationSO.internal.readOnly=true;
+                                   document.MarkVerificationSO.internal.value=0;
+                                }
+                       
+                    }
+            else
+                {
+                    if(document.MarkVerificationSO.external.length>1)
+                            {
+                                document.MarkVerificationSO.internal[i].value=internalMark ;
+                            }
+                            else
+                                {
+                                    document.MarkVerificationSO.internal.value=internalMark ;
+                                }
+                }
+        }
+}
+
+       Ajax.send("");
+}
+function CalculateInternal()
+{
+    
+ var Ajax=createXMLHttpRequest();
+   var Mark=document.MarkEntryForPRN.Mark.value;
+   var Subject=document.MarkEntryForPRN.Subject.value;
+   //alert(document.MarkEntryForPRN.Subject.value);
+         Ajax.open("POST","/OffCampus/InternalCalculation.jsp?Mark="+ Mark+"&Subject="+ Subject);
+    Ajax.onreadystatechange = function()
+    {
+        if (Ajax.readyState == 4)
+        {
+            var internalMark=Ajax.responseText.trim();
+            //alert(internalMark);
+            if(internalMark==-1)
+                {
+                    //document.getElementById("InternalMark").value="";
+                    document.getElementById("InternalMark").readOnly=false;
+                    document.getElementById('btnEdit').style.visibility='hidden';
+                }
+               else if(internalMark==-2)
+                    {
+                        document.getElementById("InternalMark").value=0;
+                        document.getElementById("InternalMark").readOnly=true;
+                        document.getElementById('btnEdit').style.visibility='hidden';
+                    }
+            else
+                {
+                    document.getElementById("InternalMark").value =internalMark ;
+                    document.getElementById('btnEdit').style.visibility='visible';
+                }
+        }
+}
+
+       Ajax.send("");
+}
+
+function EnableEditForInternal()
+{
+   //alert(document.MarkEntryForPRN.InternalMark.readOnly);
+   document.MarkEntryForPRN.InternalMark.readOnly=false;
+   document.getElementById("InternalEdit").value="Yes";
+    return false;
+}
+
+function ChangeSubjectList()
+{
+    
+ var Ajax=createXMLHttpRequest();
+   var Course=document.getElementById("Course").value;
+    var Sem=document.getElementById("YearSem").value;
+   
+         Ajax.open("POST","/OffCampus/ViewSubjectList.jsp?Course="+ Course+"&YearSem="+Sem);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+        //alert(Ajax.responseText);
+              document.getElementById("SubjectList").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function ViewAllSubjectListForApprovedListSO()
+{
+
+ var Ajax=createXMLHttpRequest();
+    var Course=document.getElementById("Course").value;
+   //var Sem=document.MarkEntryForPRN.YearSem.value;
+
+         Ajax.open("POST","/OffCampus/ViewAllSubjectsOfCourse.jsp?Course="+ Course);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+        //alert(Ajax.responseText);
+              document.getElementById("SubjectList").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function ViewAllSubjectListForApprovedListAssistant()
+{
+
+ var Ajax=createXMLHttpRequest();
+    var Course=document.getElementById("Course").value;
+   //var Sem=document.MarkEntryForPRN.YearSem.value;
+
+         Ajax.open("POST","/OffCampus/ViewAllSubjectsOfCourse.jsp?Course="+ Course);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+        //alert(Ajax.responseText);
+              document.getElementById("SubjectList").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function DisplayInternalCalculationDetails()
+{
+    var Ajax=createXMLHttpRequest();
+    var Subject=document.MarkEntryForPRN.Subject.value;
+   //alert(document.MarkEntryForPRN.Subject.value);
+         Ajax.open("POST","/OffCampus/InternalCalculation.jsp?Subject="+ Subject);
+         //alert(Subject);
+    Ajax.onreadystatechange = function()
+    {
+        if (Ajax.readyState == 4)
+        {
+            var internalMark=Ajax.responseText.trim();
+            //alert(internalMark);
+            if(internalMark==-1)
+                {
+                    document.getElementById("InternalMark").value="";
+                    document.getElementById("InternalMark").readOnly=false;
+                    document.getElementById('btnEdit').style.visibility='hidden';
+                }
+               else if(internalMark==-2)
+                    {
+                        //document.getElementById("InternalMark").value=0;
+                        document.getElementById("InternalMark").readOnly=true;
+                        document.getElementById('btnEdit').style.visibility='hidden';
+                    }
+                    else
+                        {
+                            document.getElementById('btnEdit').style.visibility='visible';
+                            document.getElementById("InternalMark").readOnly=true;
+                        }
+        }
+}
+
+       Ajax.send("");
+}
+
+function ViewSubjectTotalCountDetails()
+{
+    
+    var Exam=document.getElementById("Exam").value;     
+    var Subject=document.getElementById("Subject").value;
+    var YearSem=document.getElementById("YearSem").value;
+    var Ajax=createXMLHttpRequest();
+   
+         Ajax.open("POST","/OffCampus/SubjectDetails.jsp?Exam="+ Exam+"&Subject="+Subject+"&YearSem="+YearSem);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+        //alert(Ajax.responseText);
+              document.getElementById("SubjectCount").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+       DisplayInternalCalculationDetails();
+}
+
+function ViewAllSubjectList()
+{
+
+ var Ajax=createXMLHttpRequest();
+   var Course=document.getElementById("Course").value;
+   //var Sem=document.MarkEntryForPRN.YearSem.value;
+
+         Ajax.open("POST","/OffCampus/ViewAllSubjectsOfCourse.jsp?Course="+ Course);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+        //alert(Ajax.responseText);
+              document.getElementById("SubjectList").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function ViewSubjectList()
+{
+
+ var Ajax=createXMLHttpRequest();
+    var Course=document.getElementById("Course").value;
+   //var Sem=document.MarkEntryForPRN.YearSem.value;
+
+         Ajax.open("POST","/OffCampus/ViewAllSubjectsForSearch.jsp?Course="+ Course);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+        //alert(Ajax.responseText);
+              document.getElementById("SubjectListSearch").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+
+}
+
+function createXMLHttpRequest(){
+  // See http://en.wikipedia.org/wiki/XMLHttpRequest
+  // Provide the XMLHttpRequest class for IE 5.x-6.x:
+  if( typeof XMLHttpRequest == "undefined" ) XMLHttpRequest = function() {
+    try {return new ActiveXObject("Msxml2.XMLHTTP.6.0")} catch(e) {}
+    try {return new ActiveXObject("Msxml2.XMLHTTP.3.0")} catch(e) {}
+    try {return new ActiveXObject("Msxml2.XMLHTTP")} catch(e) {}
+    try {return new ActiveXObject("Microsoft.XMLHTTP")} catch(e) {}
+    throw new Error( "This browser does not support XMLHttpRequest." )
+  };
+  return new XMLHttpRequest();
+}
+
+function chkNum(e)
+{
+	var key;
+	var keychar;
+	if (window.event){
+		key = window.event.keyCode;
+	}else if (e){
+		key = e.which;
+	}
+	else
+		return true;
+
+	if((key == 8) || (key == 0)|| (key == 46)|| (key == 13))
+		return true;
+
+	keychar = String.fromCharCode(key);
+	keychar = keychar.toUpperCase();
+	key=keychar.charCodeAt(0);
+	if((key >= 48) && (key <= 57))
+	{
+		return true;
+	}
+	else
+            {
+
+            alert("Alphabets or special characters are not allowed")
+	    return false;
+            }
+}
+
+function chkNumForInt(e)
+{
+	var key;
+	var keychar;
+	if (window.event){
+		key = window.event.keyCode;
+	}else if (e){
+		key = e.which;
+	}
+	else
+		return true;
+
+	if((key == 8) || (key == 0)|| (key == 13))
+		return true;
+
+	keychar = String.fromCharCode(key);
+	keychar = keychar.toUpperCase();
+	key=keychar.charCodeAt(0);
+	if((key >= 48) && (key <= 57))
+	{
+		return true;
+	}
+	else
+            {
+
+            alert("Alphabets or special characters are not allowed")
+	    return false;
+            }
+}
+
+function isCountReached()
+{
+    //var count=parseInt(document.MarkEntryForPRN.Count.value);
+    
+    ViewSubjectTotalCountDetails();
+     var Ajax=createXMLHttpRequest();
+    Ajax.open("POST","/OffCampus/RecorsdsEnteredandNotVerified.jsp");
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4) {
+
+        var count=parseInt(Ajax.responseText);
+        if(count >=20)
+            alert("Send Records for Approval");
+              //document.getElementById("SubjectList").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function TotalRecordsVerifiedByAssistant()
+{
+    var Assistant=document.MarkVerificationSO.Assistant.value;
+    var Ajax=createXMLHttpRequest();
+    Ajax.open("POST","/OffCampus/CountOfMarksVerifiedByAssistant.jsp?Assistant="+Assistant);
+    Ajax.onreadystatechange = function() {
+        if (Ajax.readyState == 4)
+        {
+         document.getElementById("recordCount").innerHTML = Ajax.responseText;
+    }
+}
+
+       Ajax.send("");
+}
+
+function SelectAllRows(form)
+{
+    //var Select=document.MarkVerificationSO.SelectAll.value;
+    //alert(form.SelectAll.checked);
+    if(form.SelectAll.checked)
+        {
+            if(form.Select.length>1)
+                {
+            for(var i=0;i<form.Select.length;i++)
+                {
+                    if(document.MarkVerificationSO.external[i].readOnly==false)
+                        {
+                            form.Select[i].checked=false;
+                            
+                        }
+                        else
+                            {
+                                form.Select[i].checked=true;
+                            }
+                }
+                }
+                else
+                    {
+                        if(document.MarkVerificationSO.external.readOnly==false)
+                        {
+                            form.Select.checked=false;
+
+                        }
+                        else
+                            {
+                                form.Select.checked=true;
+                            }
+                    }
+        }
+        else
+            {
+                if(form.Select.length>0)
+                {
+                for(var i=0;i<form.Select.length;i++)
+                {
+                    form.Select[i].checked=false;
+                }
+                }
+                else
+                    {
+                        form.Select.checked=false;
+                    }
+            }
+}
+
+function SelectAllRowsForPRNList(form)
+{
+    //var Select=document.MarkVerificationSO.SelectAll.value;
+    //alert(form.SelectAll.checked);
+
+    if(form.SelectAll.checked)
+        {
+            if(form.Select.length>1)
+                {
+            for(var i=0;i<form.Select.length;i++)
+                {
+                   form.Select[i].checked=true;
+                }
+                }
+                else
+                    {
+                         form.Select.checked=true;
+                    }
+        }
+        else
+            {
+                if(form.Select.length>0)
+                {
+                for(var i=0;i<form.Select.length;i++)
+                {
+                    form.Select[i].checked=false;
+                }
+                }
+                else
+                    {
+                        form.Select.checked=false;
+                    }
+            }
+
+}
+
+function OpenTextForEdit(i)
+{  
+    if(document.MarkVerificationSO.external.length>1)
+        {
+            if(document.MarkVerificationSO.SubmitEdit[i].value=='Edit')
+                {
+                    document.MarkVerificationSO.external[i].readOnly=false;
+                    document.MarkVerificationSO.internal[i].readOnly=false;
+                    document.MarkVerificationSO.Select[i].checked=false;
+                    document.MarkVerificationSO.external[i].focus();
+                    document.MarkVerificationSO.SubmitEdit[i].value="Submit";
+                    for(var j=0;j<document.MarkVerificationSO.external.length;j++)
+                        {
+                            if(j!=i)
+                                {
+                                    document.MarkVerificationSO.SubmitEdit[j].disabled=true;
+                                }
+                        }
+
+                    return false;
+                }
+                else
+                    {
+                        UpdateMarkBySO(i);
+                        return true;
+                    }
+        }
+        else
+            {
+                
+                if(document.MarkVerificationSO.SubmitEdit.value=='Edit')
+                {
+                    
+                    document.MarkVerificationSO.external.readOnly=false;
+                    document.MarkVerificationSO.internal.readOnly=false;
+                    document.MarkVerificationSO.Select.checked=false;
+                    document.MarkVerificationSO.external.focus();
+                    document.MarkVerificationSO.SubmitEdit.value='Submit';
+                    return false;
+                }
+                else
+                    {
+                        //alert("ssssssss");
+                        UpdateMarkBySO(i);
+                        return true;
+                    }
+                 
+            }
+          
+}
+
+function UpdateMarkBySO(i)
+{
+    
+    var Select;
+    var external;
+    var internal;
+    
+            //alert(document.MarkVerificationSO.SubmitEdit[i].value);
+            //alert('pppppp');
+            if(document.MarkVerificationSO.external.length>1)
+                {
+                    Select=document.MarkVerificationSO.Select[i].value;
+                    external=document.MarkVerificationSO.external[i].value;
+                    internal=document.MarkVerificationSO.internal[i].value;
+                }
+                else
+                    {
+
+                        //alert(document.MarkVerificationSO.Select.value);
+                        Select=document.MarkVerificationSO.Select.value;
+                        external=document.MarkVerificationSO.external.value;
+                        internal=document.MarkVerificationSO.internal.value;
+                    }
+               var Ajax=createXMLHttpRequest();
+               Ajax.open("POST","/OffCampus/UpdateMarkBySO.jsp?Select="+Select+"&external="+external+"&internal="+internal);
+               Ajax.onreadystatechange = function()
+               {
+                if (Ajax.readyState == 4)
+                {
+                    //alert(Ajax.responseText);
+//                    if(Ajax.responseText=='true')
+//                        //document.MarkVerificationSO.submit();
+//                    else
+//                        alert("Error occured while updation");
+                }
+            }
+
+            Ajax.send("");
+        
+}
+
+function ResetAll()
+{
+    document.MarkEntryForPRN.Exam.value=-1;
+    document.MarkEntryForPRN.Course.value=-1
+    document.MarkEntryForPRN.YearSem.value=-1;
+    document.MarkEntryForPRN.Subject.value=-1;
+    document.MarkEntryForPRN.PRN.value="";
+    document.MarkEntryForPRN.Mark.value="";
+    document.MarkEntryForPRN.InternalMark.value="";
+    document.MarkEntryForPRN.Remarks.value='';
+    
+}
